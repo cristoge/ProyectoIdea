@@ -1,11 +1,14 @@
 import Fastify from 'fastify';
 import { db, auth } from '../src/config/firebaseconfig';
+import dotenv from 'dotenv';
+dotenv.config();
 
-const fastify = Fastify({ logger: true });
+const app = Fastify({ logger: true });
 
-fastify.get('/users', async (request, reply) => {
+app.get('/users', async (request, reply) => {
   try {
-    const usersSnapshot = await db.collection('User').get();
+    // Cambiar User por user y usar minusculas
+    const usersSnapshot = await db.collection('User').get(); 
     const users: any[] = []; // Cambia 'any' por un tipo específico si tienes uno
 
     usersSnapshot.forEach(doc => {
@@ -20,18 +23,18 @@ fastify.get('/users', async (request, reply) => {
 });
 
 // Endpoint raíz
-fastify.get('/', async (request, reply) => {
-  return { hello: 'world' };
+app.get('/', async (request, reply) => {
+  reply.send('Servidor funcionando')
 });
 
 const start = async () => {
   try {
-    // Usa la variable de entorno PORT, con un valor por defecto de 3000 si no está definida
-    const port = 3000;
-    await fastify.listen({ port });
+    // Uso de variable de entorno
+    const port = parseInt(process.env.PORT || '4000', 10);
+    await app.listen({ port });
     console.log(`Server running on http://localhost:${port}`);
   } catch (err) {
-    fastify.log.error(err);
+    app.log.error(err);
     process.exit(1);
   }
 };

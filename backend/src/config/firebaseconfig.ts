@@ -1,5 +1,10 @@
 import admin from 'firebase-admin';
-import * as serviceAccount from '/Users/cristog/Prat/Proyecto/Identificacion/keyFS.json';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+// Convertir la cadena de JSON en un objeto
+const serviceAccount = JSON.parse(process.env.FIREBASE_CREDENTIALS || '{}');
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
