@@ -1,4 +1,3 @@
-import { Timestamp } from "firebase/firestore";
 import { db, auth } from "../config/firebaseconfig";
 import { User } from "../types/user";
 import { auth as adminAuth } from "firebase-admin";
@@ -18,8 +17,11 @@ export const getAllUsers = async (): Promise<User[]> => {
   });
   return usersMap;
 };
+export const addUserWithGithub={
+  
+}
 
-export const addUser = async (userData: User): Promise<void> => {
+export const addUserWithEmail = async (userData: User): Promise<void> => {
   //Falta añadir la validacion de datos
   try {
     if (!userData.username || !userData.email || !userData.password) {

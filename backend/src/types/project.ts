@@ -1,3 +1,4 @@
+import { User } from "./user";
 export interface Project {
   projectId:        string;
   title:            string;
@@ -6,15 +7,12 @@ export interface Project {
   repositoryLink:   string;
   tags:             string[];
   technologies:     string[];
-  creator:          Creator;
+  creatorId:        User['userId'];
   creationDate:     string;
   totalStars:       number;
   gitHubRepository: GitHubRepository;
 }
 
-export interface Creator {
-  userId: string;
-}
 
 export interface GitHubRepository {
   repoId:   string;

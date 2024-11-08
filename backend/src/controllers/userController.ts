@@ -16,14 +16,29 @@ export const getUsers = async (
   }
 };
 
-export const addUser = async (
+//Funcion para poder agregar un usuario con github
+// export const addUserWithGithub = async (
+//   request: FastifyRequest<{Body:User}>,
+//   reply: FastifyReply,
+// ):Promise<void> => {
+//   try {
+//     //devuelve el id pero ahora mismo no lo estoy usando
+//     const docRef = await userModel.addUserWithGithub(request.body);
+//     reply.send({ message: "Usuario agregado" }); 
+//   } catch (error) {
+//     request.log.error(error);
+//     reply.status(500).send({ error: "Error al agregar el usuario" });
+//   }
+// }
+
+export const addUserWithEmail = async (
   request: FastifyRequest<{Body:User}>,
   reply: FastifyReply,
 ):Promise<void> => {
   //
   try {
     //devuelve el id pero ahora mismo no lo estoy usando
-    const docRef = await userModel.addUser(request.body);
+    const docRef = await userModel.addUserWithEmail(request.body);
     reply.send({ message: "Usuario agregado" }); 
   } catch (error) {
     request.log.error(error);
