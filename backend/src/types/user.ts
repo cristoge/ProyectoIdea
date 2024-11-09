@@ -3,9 +3,9 @@ export interface User {
   username:        string;
   email:           string;
   password?:        string;
-  profilePicture?: string;
-  githubId?:       string;
-  githubToken?:    string;
+  profilePicture?: string | null;
+  githubId?:       string | null;
+  githubToken?:    string | null;
   role:            string;
 }
 

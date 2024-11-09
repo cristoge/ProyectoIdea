@@ -16,20 +16,29 @@ export const getUsers = async (
   }
 };
 
-//Funcion para poder agregar un usuario con github
-// export const addUserWithGithub = async (
-//   request: FastifyRequest<{Body:User}>,
-//   reply: FastifyReply,
-// ):Promise<void> => {
-//   try {
-//     //devuelve el id pero ahora mismo no lo estoy usando
-//     const docRef = await userModel.addUserWithGithub(request.body);
-//     reply.send({ message: "Usuario agregado" }); 
-//   } catch (error) {
-//     request.log.error(error);
-//     reply.status(500).send({ error: "Error al agregar el usuario" });
-//   }
-// }
+export const addUserWithGithub = async (
+  request: FastifyRequest<{ Body: { idToken: string, displayName: string, email: string } }>,
+  reply: FastifyReply
+): Promise<void> => {
+  try {
+    // § Obtiene los datos del cuerpo de la petición
+    const { idToken, displayName, email } = request.body;
+    console.log('ID Token recibido:', idToken);
+
+    const newUser: User = await userModel.addUserWithGithub({
+      idToken,
+      displayName,
+      email
+    });
+
+    // Devuelve un mensaje de éxito con los datos del nuevo usuario
+    reply.send({ message: "Usuario agregado con GitHub", user: newUser });
+  } catch (error) {
+
+    request.log.error(error);
+    reply.status(500).send({ error: "Error al agregar el usuario con GitHub" });
+  }
+};
 
 export const addUserWithEmail = async (
   request: FastifyRequest<{Body:User}>,

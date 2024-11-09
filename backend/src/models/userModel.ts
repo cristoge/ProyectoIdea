@@ -17,9 +17,31 @@ export const getAllUsers = async (): Promise<User[]> => {
   });
   return usersMap;
 };
-export const addUserWithGithub={
-  
-}
+export const addUserWithGithub = async (userData: { idToken: string, displayName: string, email: string }): Promise<User> => {
+  try {
+    const { idToken, displayName, email } = userData;
+
+    // Verificacion del token
+    const userRecord = await adminAuth().verifyIdToken(idToken);
+
+    const newUser: User = {
+      userId: userRecord.uid,
+      username: displayName || "", 
+      email: email || userRecord.email || "unknown@example.com",
+      profilePicture: userRecord.photoURL || null,
+      githubId: userRecord.uid, 
+      githubToken: idToken, 
+      role: "Normal", 
+    };
+
+    await db.collection("user").doc(userRecord.uid).set(newUser);
+    return newUser;
+
+  } catch (error) {
+    console.error("Error al agregar el usuario con GitHub:", error);
+    throw new Error("Error al agregar el usuario con GitHub");
+  }
+};
 
 export const addUserWithEmail = async (userData: User): Promise<void> => {
   //Falta añadir la validacion de datos
@@ -39,6 +61,9 @@ export const addUserWithEmail = async (userData: User): Promise<void> => {
       username,
       email,
       password,
+      profilePicture: null,
+      githubId: null,
+      githubToken: null,
       role: role || "Normal",
     };
 

@@ -6,4 +6,5 @@ export const userRoutes = async (app: FastifyInstance) => {
   app.get("/users", userController.getUsers);
   app.post("/users", userController.addUserWithEmail);
   app.delete("/users/:userId", userController.deleteUser);
+  app.post("/users/github", userController.addUserWithGithub);
 };
