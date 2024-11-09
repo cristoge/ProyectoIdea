@@ -33,4 +33,7 @@ firebase/functions/.env
 *.njsproj
 *.sln
 *.swp
+# Environment variables
+.env
+*.env
 
