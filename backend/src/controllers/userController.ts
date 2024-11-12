@@ -1,6 +1,7 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import * as userModel from "../models/userModel"; // Importa el modelo de usuarios
 import { User } from "../types/user";
+import { auth } from "firebase-admin";
 
 
 export const getUsers = async (
@@ -17,16 +18,17 @@ export const getUsers = async (
 };
 
 export const addUserWithGithub = async (
-  request: FastifyRequest<{ Body: { idToken: string, displayName: string, email: string } }>,
+  request: FastifyRequest<{ Body: { idToken: string,githubToken:string, displayName: string, email: string } }>,
   reply: FastifyReply
 ): Promise<void> => {
   try {
     // § Obtiene los datos del cuerpo de la petición
-    const { idToken, displayName, email } = request.body;
+    const { idToken,githubToken, displayName, email } = request.body;
     console.log('ID Token recibido:', idToken);
 
     const newUser: User = await userModel.addUserWithGithub({
       idToken,
+      githubToken,
       displayName,
       email
     });
@@ -69,3 +71,28 @@ export const deleteUser = async (
     reply.status(500).send({ error: "Error al eliminar el usuario" });
   }
 }
+export const loginUser = async (
+  request: FastifyRequest<{ Body: { token: string } }>, // Asegúrate de que el frontend envíe el ID Token en el cuerpo
+  reply: FastifyReply
+) => {
+  try {
+    const { token } = request.body;
+
+    // Verifica el ID Token con Firebase Admin SDK
+    const decodedToken = await auth().verifyIdToken(token);
+    
+    // Obtén la información del usuario a partir del token decodificado
+    const userId = decodedToken.uid;
+    const userEmail = decodedToken.email;
+
+    // Puedes hacer más acciones como obtener o guardar datos del usuario si lo necesitas
+    console.log("Usuario verificado:", userEmail);
+
+    // Aquí puedes enviar un mensaje de éxito o realizar otras acciones
+    reply.send({ message: "Login exitoso", userId, userEmail });
+
+  } catch (error) {
+    console.error("Error al verificar el token", error);
+    reply.status(401).send({ error: "Token no válido o expirado" });
+  }
+};

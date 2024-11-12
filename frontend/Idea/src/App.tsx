@@ -1,7 +1,7 @@
 import './App.css';
 import { app } from '../firebaseConfig';  // Asegúrate de que firebaseConfig.js esté bien configurado
 import { getAuth, GithubAuthProvider, signInWithPopup } from "firebase/auth";
-
+import Login from './components/Login';
 function App() {
   const auth = getAuth(app);
   const provider = new GithubAuthProvider();
@@ -15,8 +15,8 @@ function App() {
         // obtiene el token
         const idToken = await user.getIdToken();  
         const credential = GithubAuthProvider.credentialFromResult(response);
-        const githubtoken = credential ? credential.accessToken : null;
-        console.log("GithubToken:", githubtoken);
+        const githubToken = credential ? credential.accessToken : null;
+        console.log("GithubToken:", githubToken);
         console.log("ID Token:", idToken);
 
 
@@ -29,7 +29,7 @@ function App() {
             },
             body: JSON.stringify({
               idToken,
-              githubtoken,
+              githubToken,
             }),
           });
           const data = await backendResponse.json();
@@ -51,6 +51,7 @@ function App() {
     <div className="auth-container">
       <h1>Ejemplo 12 - Autenticación con GitHub</h1>
       <button onClick={githubSignUp}>Iniciar sesión con GitHub</button>
+      <Login />
     </div>
   );
 }

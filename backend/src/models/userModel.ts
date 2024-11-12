@@ -17,9 +17,9 @@ export const getAllUsers = async (): Promise<User[]> => {
   });
   return usersMap;
 };
-export const addUserWithGithub = async (userData: { idToken: string, displayName: string, email: string }): Promise<User> => {
+export const addUserWithGithub = async (userData: { idToken: string,githubToken:string, displayName: string, email: string }): Promise<User> => {
   try {
-    const { idToken, displayName, email } = userData;
+    const { idToken, displayName,githubToken ,email } = userData;
 
     // Verificacion del token
     const userRecord = await adminAuth().verifyIdToken(idToken);
@@ -30,7 +30,7 @@ export const addUserWithGithub = async (userData: { idToken: string, displayName
       email: email || userRecord.email || "unknown@example.com",
       profilePicture: userRecord.photoURL || null,
       githubId: userRecord.uid, 
-      githubToken: idToken, 
+      githubToken: githubToken, 
       role: "Normal", 
     };
 
@@ -83,3 +83,7 @@ export const addUserWithEmail = async (userData: User): Promise<void> => {
 export const deleteUser = async (userId: string): Promise<void> => {
   await db.collection("user").doc(userId).delete();
 };
+export function loginUser(email: string, password: string) {
+  throw new Error("Function not implemented.");
+}
+
