@@ -16,6 +16,19 @@ export const getUsers = async (
     reply.status(500).send({ error: "Error al obtener los usuarios" });
   }
 };
+export const getUserData = async (
+  request: FastifyRequest,
+  reply: FastifyReply,
+) => {
+  try {
+    const userId = request.user.uid;
+    const userData = await userModel.getUserById(userId)
+    reply.send(userData);
+  } catch (error) {
+    request.log.error(error);
+    reply.status(500).send({ error: "Error al obtener el usuario" });
+  }
+}
 
 export const addUserWithGithub = async (
   request: FastifyRequest<{ Body: { idToken: string,githubToken:string, displayName: string, email: string } }>,
@@ -71,24 +84,22 @@ export const deleteUser = async (
     reply.status(500).send({ error: "Error al eliminar el usuario" });
   }
 }
+
 export const loginUser = async (
-  request: FastifyRequest<{ Body: { token: string } }>, // Asegúrate de que el frontend envíe el ID Token en el cuerpo
+  request: FastifyRequest<{ Body: { token: string } }>, 
   reply: FastifyReply
 ) => {
   try {
     const { token } = request.body;
-
-    // Verifica el ID Token con Firebase Admin SDK
     const decodedToken = await auth().verifyIdToken(token);
-    
+
     // Obtén la información del usuario a partir del token decodificado
     const userId = decodedToken.uid;
     const userEmail = decodedToken.email;
 
-    // Puedes hacer más acciones como obtener o guardar datos del usuario si lo necesitas
     console.log("Usuario verificado:", userEmail);
 
-    // Aquí puedes enviar un mensaje de éxito o realizar otras acciones
+    // Mensaje de éxito 
     reply.send({ message: "Login exitoso", userId, userEmail });
 
   } catch (error) {

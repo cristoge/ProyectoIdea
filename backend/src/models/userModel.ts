@@ -17,6 +17,19 @@ export const getAllUsers = async (): Promise<User[]> => {
   });
   return usersMap;
 };
+
+export const getUserById = async (userId: string)=> {
+  try {
+    const user = await db.collection("user").doc(userId).get();
+    if (!user.exists) {
+      throw new Error("Usuario not found");
+    }
+    return user.data();
+  } catch (error) {
+    throw new Error("Error retrieving the user data");
+  }
+}
+
 export const addUserWithGithub = async (userData: { idToken: string,githubToken:string, displayName: string, email: string }): Promise<User> => {
   try {
     const { idToken, displayName,githubToken ,email } = userData;
@@ -27,7 +40,7 @@ export const addUserWithGithub = async (userData: { idToken: string,githubToken:
     const newUser: User = {
       userId: userRecord.uid,
       username: displayName || "", 
-      email: email || userRecord.email || "unknown@example.com",
+      email: email || userRecord.email || "",
       profilePicture: userRecord.photoURL || null,
       githubId: userRecord.uid, 
       githubToken: githubToken, 
