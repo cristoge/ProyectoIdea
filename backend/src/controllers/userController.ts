@@ -107,3 +107,18 @@ export const loginUser = async (
     reply.status(401).send({ error: "Token no válido o expirado" });
   }
 };
+
+// export const updatePhoto = async (
+//   request: FastifyRequest<{ Body: { photoURL: string } }>,
+//   reply: FastifyReply
+// ) => {
+//   try {
+//     const userId = request.user.uid;
+//     const { photoURL } = request.body;
+//     await userModel.updatePhoto(userId, photoURL);
+//     reply.send({ message: "Foto de perfil actualizada" });
+//   } catch (error) {
+//     request.log.error(error);
+//     reply.status(500).send({ error: "Error al actualizar la foto de perfil" });
+//   }
+// }
