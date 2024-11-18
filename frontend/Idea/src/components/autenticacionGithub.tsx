@@ -32,9 +32,9 @@ const LoginGitHub = () => {
           });
           const data = await backendResponse.json();
           if (backendResponse.ok) {
-            console.log("Usuario agregado en el backend:", data);
+            console.log("Usuario Autenticado", data);
           } else {
-            console.error("Error al agregar el usuario:", data);
+            console.error("Error al autenticar:", data);
           }
         } catch (error) {
           console.error("Error al enviar los datos al backend:", error);

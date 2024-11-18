@@ -5,11 +5,10 @@ export interface Project {
   description:      string;
   imageVideoUrl:    string;
   repositoryLink:   string;
-  tags:             string[];
-  technologies:     string[];
   creatorId:        User['userId'];
   creationDate:     string;
-  totalStars:       number;
+  likeCounts:      number;
+  likedBy:          User['userId'][];
   gitHubRepository: GitHubRepository;
 }
 
