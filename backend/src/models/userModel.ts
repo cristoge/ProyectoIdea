@@ -100,3 +100,29 @@ export function loginUser(email: string, password: string) {
   throw new Error("Function not implemented.");
 }
 
+export const updateProfilePicture = async (userId: string, newProfilePictureUrl: string): Promise<void> => {
+  try {
+    // Actualizar la URL de la foto de perfil en Firebase Authentication
+    await adminAuth().updateUser(userId, {
+      photoURL: newProfilePictureUrl
+    });
+
+    // También actualizar en la base de datos (Firestore)
+    const userDoc = db.collection("user").doc(userId);
+    const user = await userDoc.get();
+
+    if (!user.exists) {
+      throw new Error("Usuario no encontrado");
+    }
+
+    // Actualizar la información del perfil en Firestore
+    await userDoc.update({
+      profilePicture: newProfilePictureUrl
+    });
+
+    console.log("Foto de perfil actualizada correctamente");
+  } catch (error) {
+    console.error("Error al actualizar la foto de perfil:", error);
+    throw new Error("No se pudo actualizar la foto de perfil");
+  }
+};

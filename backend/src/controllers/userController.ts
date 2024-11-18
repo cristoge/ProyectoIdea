@@ -93,32 +93,31 @@ export const loginUser = async (
     const { token } = request.body;
     const decodedToken = await auth().verifyIdToken(token);
 
-    // Obtén la información del usuario a partir del token decodificado
     const userId = decodedToken.uid;
     const userEmail = decodedToken.email;
 
-    console.log("Usuario verificado:", userEmail);
+    console.log("Verified user:", userEmail);
 
     // Mensaje de éxito 
-    reply.send({ message: "Login exitoso", userId, userEmail });
+    reply.send({ message: "Login successful", userId, userEmail });
 
   } catch (error) {
-    console.error("Error al verificar el token", error);
-    reply.status(401).send({ error: "Token no válido o expirado" });
+    console.error("Error ", error);
+    reply.status(401).send({ error: "Invalid or expired token" });
   }
 };
 
-// export const updatePhoto = async (
-//   request: FastifyRequest<{ Body: { photoURL: string } }>,
-//   reply: FastifyReply
-// ) => {
-//   try {
-//     const userId = request.user.uid;
-//     const { photoURL } = request.body;
-//     await userModel.updatePhoto(userId, photoURL);
-//     reply.send({ message: "Foto de perfil actualizada" });
-//   } catch (error) {
-//     request.log.error(error);
-//     reply.status(500).send({ error: "Error al actualizar la foto de perfil" });
-//   }
-// }
+export const updateProfilePicture = async (
+  request: FastifyRequest<{ Body: { profilePicture: string } }>,
+  reply: FastifyReply,
+) => {
+  try {
+    const { profilePicture } = request.body;
+    const userId = request.user.uid;
+    await userModel.updateProfilePicture(userId, profilePicture);
+    reply.send({ message: "Foto de perfil actualizada" });
+  } catch (error) {
+    request.log.error(error);
+    reply.status(500).send({ error: "Error al actualizar la foto de perfil" });
+  }
+}
