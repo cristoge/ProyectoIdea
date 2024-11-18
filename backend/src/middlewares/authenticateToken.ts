@@ -23,6 +23,7 @@ export const authMiddleware = async (request: FastifyRequest, reply: FastifyRepl
     const decodedToken = await auth.verifyIdToken(token);  
     request.user = decodedToken;  //
     request.log.info('Token verified successfully', { decodedToken });
+    console.log(request.user);
     
     return; // Si la verificación del token es exitosa, continúa
 

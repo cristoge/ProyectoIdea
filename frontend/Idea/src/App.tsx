@@ -3,6 +3,7 @@ import { app } from '../firebaseConfig';  // Asegúrate de que firebaseConfig.js
 import { getAuth, GithubAuthProvider, signInWithPopup } from "firebase/auth";
 import Login from './components/Login';
 import UserProfile from './components/EjemploInfo';
+import CreateProject from './components/AñadirProyecto';
 function App() {
   const auth = getAuth(app);
   const provider = new GithubAuthProvider();
@@ -54,6 +55,8 @@ function App() {
       <button onClick={githubSignUp}>Iniciar sesión con GitHub</button>
       <Login />
       <UserProfile />
+      <CreateProject />
+
     </div>
   );
 }
