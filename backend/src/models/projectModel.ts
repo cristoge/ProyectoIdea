@@ -6,10 +6,19 @@ export const createProject = async (projectData: Project,userData:string): Promi
   try {
     const projectRef = db.collection("project").doc();
     projectData.projectId = projectRef.id; 
-    const newProject = {
-      ...projectData,
-      creatorId: userData, // añade el id a traves del middleware
+    
+    const newProject : Project = {
+      ...projectData,//deberia ser los datos pasados desde el front.           
+      projectId: projectRef.id,
+      // title: "",
+      // description:      "",
+      // imageVideoUrl:    "",
+      // repositoryLink:   "",
+      creatorId: userData,      
+      likeCounts: 0,            
+      likedBy: [],      
     };
+
     await projectRef.set(newProject);
     console.log("Proyecto creado correctamente");
   } catch (error) {
@@ -21,7 +30,7 @@ export const createProject = async (projectData: Project,userData:string): Promi
 // Función para editar un proyecto existente
 export const updateProject = async (projectId: string, projectData: Partial<Project>,userId:any): Promise<void> => {
   try {
-    const projectRef = db.collection("projects").doc(projectId);
+    const projectRef = db.collection("project").doc(projectId);
     const projectDoc = await projectRef.get();
     if (!projectDoc.exists) {
       throw new Error("Proyecto no encontrado");
@@ -67,7 +76,7 @@ export const getAllProjects = async (): Promise<Project[]> => {
 // Función para obtener un proyecto por su ID
 export const getProjectById = async (projectId: string): Promise<Project | null> => {
   try {
-    const projectDoc = await db.collection("projects").doc(projectId).get();
+    const projectDoc = await db.collection("project").doc(projectId).get();
     if (!projectDoc.exists) {
       return null;
     }
