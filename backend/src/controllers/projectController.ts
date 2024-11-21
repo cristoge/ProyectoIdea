@@ -84,3 +84,20 @@ export const getProjectById = async (
     reply.status(500).send({ error: "Error al obtener el proyecto" });
   }
 };
+
+export const getProjectsByUser = async (
+  request: FastifyRequest,
+  reply: FastifyReply
+): Promise<void> => {
+  try {
+    const userData = request.user.user_id;
+    if (!userData) {
+      return reply.status(401).send({ error: "Usuario no autenticado" });
+    }
+    const projects = await projectModel.getProjectsByUserId(userData); // Llama al modelo para obtener todos los proyectos
+    reply.send(projects);
+  } catch (error) {
+    request.log.error(error);
+    reply.status(500).send({ error: "Error al obtener los proyectos" });
+  }
+}

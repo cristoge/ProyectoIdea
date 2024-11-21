@@ -12,5 +12,7 @@ export const projectRoutes = async (app: FastifyInstance) => {
   app.post<{ Body: Project }>("/projects", { preHandler: [authMiddleware] }, projectController.createProject);
   app.put<{ Params: { projectId: string }; Body: Partial<Project> }>("/projects/:projectId", { preHandler: [authMiddleware] }, projectController.updateProject);
   app.delete<{ Params: { projectId: string } }>("/projects/:projectId", { preHandler: [authMiddleware] }, projectController.deleteProject);
+
+  app.get("/usersposts",{preHandler: [authMiddleware]}, projectController.getProjectsByUser);
 };
 

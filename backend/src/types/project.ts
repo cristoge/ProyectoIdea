@@ -6,15 +6,23 @@ export interface Project {
   imageVideoUrl:    string;
   repositoryLink:   string;
   creatorId:        User['userId'];
-  creationDate:     string;
+  creationDate:     Date
   likeCounts:      number;
   likedBy:          User['userId'][];
-  gitHubRepository: GitHubRepository;
+  comments?:        Comment[];
+  gitHubRepository?: GitHubRepository;
 }
-
 
 export interface GitHubRepository {
   repoId:   string;
   repoName: string;
   repoUrl:  string;
+}
+
+
+export interface Comment {
+  commentId:    string;           
+  userId:       User['userId'];   
+  text:         string;           
+  creationDate: Date;             
 }

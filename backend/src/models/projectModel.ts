@@ -1,6 +1,5 @@
 import { db } from "../config/firebaseconfig";
 import { Project } from "../types/project";
-
 // Función para crear un nuevo proyecto
 export const createProject = async (projectData: Project,userData:string): Promise<void> => {
   try {
@@ -14,6 +13,7 @@ export const createProject = async (projectData: Project,userData:string): Promi
       // description:      "",
       // imageVideoUrl:    "",
       // repositoryLink:   "",
+      creationDate: new Date(),
       creatorId: userData,      
       likeCounts: 0,            
       likedBy: [],      
@@ -86,3 +86,13 @@ export const getProjectById = async (projectId: string): Promise<Project | null>
     throw new Error("No se pudo obtener el proyecto");
   }
 };
+export const getProjectsByUserId = async (userId: string): Promise<Project[]> => {
+  try {
+    const projectSnapshot = await db.collection("project").where("creatorId", "==", userId).get();
+    const projects: Project[] = projectSnapshot.docs.map(doc => doc.data() as Project);
+    return projects;
+  } catch (error) {
+    console.error("Error al obtener los proyectos:", error);
+    throw new Error("No se pudieron obtener los proyectos");
+  }
+}
