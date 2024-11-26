@@ -5,7 +5,7 @@ export const createProject = async (projectData: Project,userData:string): Promi
   try {
     const projectRef = db.collection("project").doc();
     projectData.projectId = projectRef.id; 
-    
+
     const newProject : Project = {
       ...projectData,//deberia ser los datos pasados desde el front.           
       projectId: projectRef.id,
@@ -89,6 +89,50 @@ export const getProjectById = async (projectId: string): Promise<Project | null>
 export const getProjectsByUserId = async (userId: string): Promise<Project[]> => {
   try {
     const projectSnapshot = await db.collection("project").where("creatorId", "==", userId).get();
+    const projects: Project[] = projectSnapshot.docs.map(doc => doc.data() as Project);
+    return projects;
+  } catch (error) {
+    console.error("Error al obtener los proyectos:", error);
+    throw new Error("No se pudieron obtener los proyectos");
+  }
+}
+
+export const likeProject = async (projectId: string, userId: string): Promise<void> => {
+  try {
+    const projectRef = db.collection("project").doc(projectId);
+    const projectDoc = await projectRef.get();
+    if (!projectDoc.exists) {
+      throw new Error("Proyecto no encontrado");
+    }
+    const project = projectDoc.data();
+    if (!project) {
+      throw new Error("Proyecto no encontrado");
+    }
+    if (project.likedBy.includes(userId)) {
+      throw new Error("Ya has dado like a este proyecto");
+    }
+    await projectRef.update({
+      likeCounts: project.likeCounts + 1,
+      likedBy: [...project.likedBy, userId],
+    });
+    console.log("Proyecto actualizado correctamente");
+  } catch (error) {
+    console.error("Error al actualizar el proyecto:", error);
+    throw new Error("No se pudo actualizar el proyecto");
+  }
+}
+
+export const rankingProjects = async (): Promise<Project[]> => {
+  try {             
+    const startDate = new Date();
+    startDate.setMonth(startDate.getMonth() - 1); // hace 1 mes
+    const projectSnapshot = await db.collection("project")
+    .where("createdAt", ">=", startDate)    
+    .orderBy("createdAt", "desc")        
+    .orderBy("likeCounts", "desc")
+    .limit(10)
+    .get();
+    
     const projects: Project[] = projectSnapshot.docs.map(doc => doc.data() as Project);
     return projects;
   } catch (error) {

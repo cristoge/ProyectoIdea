@@ -14,5 +14,6 @@ export const projectRoutes = async (app: FastifyInstance) => {
   app.delete<{ Params: { projectId: string } }>("/projects/:projectId", { preHandler: [authMiddleware] }, projectController.deleteProject);
 
   app.get("/usersposts",{preHandler: [authMiddleware]}, projectController.getProjectsByUser);
+  app.get("/ranking", projectController.rankingProjects);
 };
 

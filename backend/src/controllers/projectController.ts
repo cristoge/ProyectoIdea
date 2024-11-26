@@ -101,3 +101,32 @@ export const getProjectsByUser = async (
     reply.status(500).send({ error: "Error al obtener los proyectos" });
   }
 }
+
+// Dar like a un proyecto
+export const likeProject = async (
+  request: FastifyRequest<{ Params: { projectId: string } }>,
+  reply: FastifyReply
+): Promise<void> => {
+  try {
+    const { projectId } = request.params;
+    const userData = request.user.user_id;
+    await projectModel.likeProject(projectId, userData);
+    reply.send({ message: "Proyecto liked" });
+  } catch (error) {
+    request.log.error(error);
+    reply.status(500).send({ error: "Error al dar like al proyecto" });
+  }
+};
+
+export const rankingProjects = async (
+  request: FastifyRequest,
+  reply: FastifyReply
+): Promise<void> => {
+  try {
+    const projects = await projectModel.rankingProjects();
+    reply.send(projects);
+  } catch (error) {
+    request.log.error(error);
+    reply.status(500).send({ error: "Error al obtener los proyectos" });
+  }
+}
