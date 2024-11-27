@@ -135,3 +135,17 @@ export const updateProfilePicture = async (userId: string, newProfilePictureUrl:
     throw new Error("No se pudo actualizar la foto de perfil");
   }
 };
+// export const follow = async (followerId: string, followedId: string): Promise<void> => {
+//   try {
+//     const followData = {
+//       followerId,
+//       followedId,
+//       startDate: new Date()
+//     };
+//     await db.collection("follow").add(followData);
+//     console.log("Usuario seguido correctamente");
+//   } catch (error) {
+//     console.error("Error al seguir al usuario:", error);
+//     throw new Error("No se pudo seguir al usuario");
+//   }
+// }

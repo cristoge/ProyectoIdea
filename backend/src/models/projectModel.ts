@@ -126,13 +126,10 @@ export const rankingProjects = async (): Promise<Project[]> => {
   try {             
     const startDate = new Date();
     startDate.setMonth(startDate.getMonth() - 1); // hace 1 mes
-    const projectSnapshot = await db.collection("project")
-    .where("createdAt", ">=", startDate)    
-    .orderBy("createdAt", "desc")        
+    const projectSnapshot = await db.collection("project")    
     .orderBy("likeCounts", "desc")
     .limit(10)
     .get();
-    
     const projects: Project[] = projectSnapshot.docs.map(doc => doc.data() as Project);
     return projects;
   } catch (error) {
