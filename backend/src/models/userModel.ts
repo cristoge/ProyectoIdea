@@ -29,7 +29,7 @@ export const getUserById = async (userId: string)=> {
     throw new Error("Error retrieving the user data");
   }
 }
-
+//para poder sincronizar con github se necesita un token desde el frontend, podria hacer un patch y que guarde el token de github en la base de datos.
 export const addUserWithGithub = async (userData: { idToken: string,githubToken:string, displayName: string, email: string }): Promise<User> => {
   try {
     const { idToken, displayName,githubToken ,email } = userData;
@@ -37,6 +37,15 @@ export const addUserWithGithub = async (userData: { idToken: string,githubToken:
     // Verificacion del token
     const userRecord = await adminAuth().verifyIdToken(idToken);
 
+    const userRef = db.collection("user").doc(userRecord.uid);
+    const existingUserDoc = await userRef.get();
+
+    if (existingUserDoc.exists) {
+      console.log("Usuario ya registrado. Retornando datos existentes.");
+      const existingUser = existingUserDoc.data() as User;
+      return existingUser;
+    }
+    
     const newUser: User = {
       userId: userRecord.uid,
       username: displayName || "", 
@@ -126,3 +135,17 @@ export const updateProfilePicture = async (userId: string, newProfilePictureUrl:
     throw new Error("No se pudo actualizar la foto de perfil");
   }
 };
+// export const follow = async (followerId: string, followedId: string): Promise<void> => {
+//   try {
+//     const followData = {
+//       followerId,
+//       followedId,
+//       startDate: new Date()
+//     };
+//     await db.collection("follow").add(followData);
+//     console.log("Usuario seguido correctamente");
+//   } catch (error) {
+//     console.error("Error al seguir al usuario:", error);
+//     throw new Error("No se pudo seguir al usuario");
+//   }
+// }

@@ -4,3 +4,5 @@ export interface Follow {
   followedId: string;
   startDate:  Date;
 }
+
+// no hace falta, sera una subcoleccion de user

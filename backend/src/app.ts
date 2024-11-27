@@ -1,6 +1,7 @@
 import Fastify from "fastify";
 import { db, auth } from "../src/config/firebaseconfig";
 import { userRoutes } from "./routes/userRoutes";
+import { projectRoutes } from "./routes/projectRoutes";
 import fastifyCors from '@fastify/cors';
 import dotenv from "dotenv";
 dotenv.config();
@@ -13,6 +14,7 @@ app.register(fastifyCors, {
 });
 //Registrar las rutas
 app.register(userRoutes);
+app.register(projectRoutes);
 
 // Endpoint raíz
 app.get("/", async (request, reply) => {
