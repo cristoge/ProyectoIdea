@@ -5,6 +5,7 @@ import { useState } from 'react';
 const CreateProject = () => {
   const [loading, setLoading] = useState(false); // Estado para indicar si la solicitud está en curso
   const [projectTitle, setProjectTitle] = useState(''); // Estado para el título del proyecto
+  const [projectDescription, setProjectDescription] = useState(''); // Estado para la descripción del proyecto
 
   const createProject = async () => {
     try {
@@ -17,9 +18,10 @@ const CreateProject = () => {
       if (currentUser) {
         const token = await currentUser.getIdToken(); // Obtén el token de ID del usuario
 
-        // Cuerpo del proyecto a enviar (en este caso, solo el título)
+        // Cuerpo del proyecto a enviar (incluyendo título y descripción)
         const projectData = {
-          title: projectTitle, // El título del proyecto que se va a crear
+          title: projectTitle, // El título del proyecto
+          description: projectDescription, // La descripción del proyecto
         };
 
         const response = await fetch("http://localhost:3000/projects", {
@@ -57,7 +59,15 @@ const CreateProject = () => {
         value={projectTitle}
         onChange={(e) => setProjectTitle(e.target.value)} // Actualiza el título del proyecto
       />
-      <button onClick={createProject} disabled={loading || !projectTitle}>
+      <textarea
+        placeholder="Enter project description"
+        value={projectDescription}
+        onChange={(e) => setProjectDescription(e.target.value)} // Actualiza la descripción del proyecto
+      />
+      <button
+        onClick={createProject}
+        disabled={loading || !projectTitle || !projectDescription} // Deshabilita el botón si faltan datos
+      >
         {loading ? "Loading..." : "Create Project"}
       </button>
       <p>Check the console for project creation result.</p>
@@ -66,4 +76,3 @@ const CreateProject = () => {
 };
 
 export default CreateProject;
-
