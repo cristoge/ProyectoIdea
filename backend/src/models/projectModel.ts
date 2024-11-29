@@ -1,6 +1,7 @@
 import { db } from "../config/firebaseconfig";
 import { Project } from "../types/project";
 // Función para crear un nuevo proyecto
+
 export const createProject = async (projectData: Project,userData:string): Promise<void> => {
   try {
     const projectRef = db.collection("project").doc();

@@ -1,52 +1,82 @@
-import { getAuth } from 'firebase/auth'; // Importa el método de autenticación de Firebase
-import { app } from '../../firebaseConfig'; // Asegúrate de que esto apunte a tu archivo de configuración de Firebase
-import { useState } from 'react';
+import { getAuth } from "firebase/auth"; 
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage"; 
+import { app } from "../../firebaseConfig"; 
+import { useState } from "react";
 
 const CreateProject = () => {
-  const [loading, setLoading] = useState(false); // Estado para indicar si la solicitud está en curso
-  const [projectTitle, setProjectTitle] = useState(''); // Estado para el título del proyecto
-  const [projectDescription, setProjectDescription] = useState(''); // Estado para la descripción del proyecto
+  const [loading, setLoading] = useState(false);
+  const [projectTitle, setProjectTitle] = useState("");
+  const [projectDescription, setProjectDescription] = useState("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setImageFile(e.target.files[0]);
+    }
+  };
+
+  const uploadImageToStorage = async (file: File): Promise<string> => {
+    const storage = getStorage(app);
+    const storageRef = ref(storage, `projects/${file.name}-${Date.now()}`);
+    const uploadTask = uploadBytesResumable(storageRef, file);
+
+    return new Promise((resolve, reject) => {
+      uploadTask.on(
+        "state_changed",
+        null,
+        (error) => reject(error),
+        async () => {
+          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+          resolve(downloadURL);
+        }
+      );
+    });
+  };
 
   const createProject = async () => {
     try {
-      setLoading(true); // Establece el estado de carga a true cuando comienza la solicitud
-
-      // Obtén el token del usuario autenticado desde Firebase
+      setLoading(true);
       const auth = getAuth(app);
       const currentUser = auth.currentUser;
 
-      if (currentUser) {
-        const token = await currentUser.getIdToken(); // Obtén el token de ID del usuario
-
-        // Cuerpo del proyecto a enviar (incluyendo título y descripción)
-        const projectData = {
-          title: projectTitle, // El título del proyecto
-          description: projectDescription, // La descripción del proyecto
-        };
-
-        const response = await fetch("http://localhost:3000/projects", {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`, // Incluye el token en el header de autorización
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(projectData), // El cuerpo de la solicitud con los datos del proyecto
-        });
-
-        const data = await response.json(); // Convierte la respuesta a JSON
-
-        if (response.ok) {
-          console.log("Proyecto creado correctamente:", data); // Muestra la respuesta en la consola
-        } else {
-          console.error("Error al crear el proyecto:", data.error); // Muestra el error si ocurre
-        }
-      } else {
+      if (!currentUser) {
         console.error("No user is authenticated.");
+        return;
+      }
+
+      const token = await currentUser.getIdToken();
+      let imageVideoUrl = "";
+
+      if (imageFile) {
+        imageVideoUrl = await uploadImageToStorage(imageFile);
+      }
+
+      const projectData = {
+        title: projectTitle,
+        description: projectDescription,
+        imageVideoUrl, // URL de la imagen subida
+      };
+
+      const response = await fetch("http://localhost:3000/projects", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(projectData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        console.log("Proyecto creado correctamente:", data);
+      } else {
+        console.error("Error al crear el proyecto:", data.error);
       }
     } catch (error) {
-      console.error("Error durante la solicitud:", error); // Maneja los errores en la solicitud
+      console.error("Error durante la solicitud:", error);
     } finally {
-      setLoading(false); // Establece el estado de carga a false cuando la solicitud termina
+      setLoading(false);
     }
   };
 
@@ -57,20 +87,20 @@ const CreateProject = () => {
         type="text"
         placeholder="Enter project title"
         value={projectTitle}
-        onChange={(e) => setProjectTitle(e.target.value)} // Actualiza el título del proyecto
+        onChange={(e) => setProjectTitle(e.target.value)}
       />
       <textarea
         placeholder="Enter project description"
         value={projectDescription}
-        onChange={(e) => setProjectDescription(e.target.value)} // Actualiza la descripción del proyecto
+        onChange={(e) => setProjectDescription(e.target.value)}
       />
+      <input type="file" accept="image/*" onChange={handleFileChange} />
       <button
         onClick={createProject}
-        disabled={loading || !projectTitle || !projectDescription} // Deshabilita el botón si faltan datos
+        disabled={loading || !projectTitle || !projectDescription || !imageFile}
       >
         {loading ? "Loading..." : "Create Project"}
       </button>
-      <p>Check the console for project creation result.</p>
     </div>
   );
 };

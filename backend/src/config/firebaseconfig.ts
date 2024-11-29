@@ -8,9 +8,10 @@ const serviceAccount = JSON.parse(process.env.FIREBASE_CREDENTIALS || '{}');
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
+  storageBucket: 'dam2-proyectocr.firebasestorage.app'
 });
 
 const db = admin.firestore();
 const auth = admin.auth();
-
-export { db, auth };
+const bucket = admin.storage().bucket();
+export { db, auth ,bucket};
