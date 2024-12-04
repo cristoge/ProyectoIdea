@@ -13,7 +13,7 @@ export const createProject = async (
     if (!userData) {
       return reply.status(401).send({ error: "Usuario no autenticado" });
     }
-    await projectModel.createProject(projectData,userData); // Llama al modelo para crear el proyecto
+    await projectModel.createProject(projectData, userData); // Llama al modelo para crear el proyecto
     reply.send({ message: "Proyecto creado correctamente" });
   } catch (error) {
     request.log.error(error);
@@ -23,14 +23,17 @@ export const createProject = async (
 
 // Editar un proyecto
 export const updateProject = async (
-  request: FastifyRequest<{ Params: { projectId: string }; Body: Partial<Project> }>,
+  request: FastifyRequest<{
+    Params: { projectId: string };
+    Body: Partial<Project>;
+  }>,
   reply: FastifyReply
 ): Promise<void> => {
   try {
     const { projectId } = request.params;
     const projectData = request.body;
     const userData = request.user.user_id;
-    await projectModel.updateProject(projectId, projectData,userData); // Llama al modelo para actualizar el proyecto
+    await projectModel.updateProject(projectId, projectData, userData); // Llama al modelo para actualizar el proyecto
     reply.send({ message: "Proyecto actualizado correctamente" });
   } catch (error) {
     request.log.error(error);
@@ -100,7 +103,7 @@ export const getProjectsByUser = async (
     request.log.error(error);
     reply.status(500).send({ error: "Error al obtener los proyectos" });
   }
-}
+};
 
 // Dar like a un proyecto
 export const likeProject = async (
@@ -129,4 +132,4 @@ export const rankingProjects = async (
     request.log.error(error);
     reply.status(500).send({ error: "Error al obtener los proyectos" });
   }
-}
+};

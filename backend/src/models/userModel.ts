@@ -18,7 +18,7 @@ export const getAllUsers = async (): Promise<User[]> => {
   return usersMap;
 };
 
-export const getUserById = async (userId: string)=> {
+export const getUserById = async (userId: string) => {
   try {
     const user = await db.collection("user").doc(userId).get();
     if (!user.exists) {
@@ -28,13 +28,18 @@ export const getUserById = async (userId: string)=> {
   } catch (error) {
     throw new Error("Error retrieving the user data");
   }
-}
+};
 //para poder sincronizar con github se necesita un token desde el frontend, podria hacer un patch y que guarde el token de github en la base de datos.
-export const addUserWithGithub = async (userData: { idToken: string,githubToken:string, displayName: string, email: string }): Promise<User> => {
+export const addUserWithGithub = async (userData: {
+  idToken: string;
+  githubToken: string;
+  displayName: string;
+  email: string;
+}): Promise<User> => {
   try {
-    const { idToken, displayName,githubToken ,email } = userData;
+    const { idToken, displayName, githubToken, email } = userData;
 
-    // Verificacion del token
+    // Verificación del token
     const userRecord = await adminAuth().verifyIdToken(idToken);
 
     const userRef = db.collection("user").doc(userRecord.uid);
@@ -45,20 +50,28 @@ export const addUserWithGithub = async (userData: { idToken: string,githubToken:
       const existingUser = existingUserDoc.data() as User;
       return existingUser;
     }
-    
+
     const newUser: User = {
       userId: userRecord.uid,
-      username: displayName || "", 
+      username: displayName || "",
       email: email || userRecord.email || "",
       profilePicture: userRecord.photoURL || null,
-      githubId: userRecord.uid, 
-      githubToken: githubToken, 
-      role: "Normal", 
+      role: "Normal",
     };
 
-    await db.collection("user").doc(userRecord.uid).set(newUser);
-    return newUser;
+    // Crear la subcolección github con los datos relevantes de GitHub
+    const githubData = {
+      githubId: userRecord.uid,
+      githubToken: githubToken,
+    };
 
+    // Guardar el documento del usuario
+    await userRef.set(newUser);
+
+    // Agregar la subcolección github
+    await userRef.collection("github").doc("data").set(githubData);
+
+    return newUser;
   } catch (error) {
     console.error("Error al agregar el usuario con GitHub:", error);
     throw new Error("Error al agregar el usuario con GitHub");
@@ -109,11 +122,14 @@ export function loginUser(email: string, password: string) {
   throw new Error("Function not implemented.");
 }
 
-export const updateProfilePicture = async (userId: string, newProfilePictureUrl: string): Promise<void> => {
+export const updateProfilePicture = async (
+  userId: string,
+  newProfilePictureUrl: string
+): Promise<void> => {
   try {
     // Actualizar la URL de la foto de perfil en Firebase Authentication
     await adminAuth().updateUser(userId, {
-      photoURL: newProfilePictureUrl
+      photoURL: newProfilePictureUrl,
     });
 
     // También actualizar en la base de datos (Firestore)
@@ -126,7 +142,7 @@ export const updateProfilePicture = async (userId: string, newProfilePictureUrl:
 
     // Actualizar la información del perfil en Firestore
     await userDoc.update({
-      profilePicture: newProfilePictureUrl
+      profilePicture: newProfilePictureUrl,
     });
 
     console.log("Foto de perfil actualizada correctamente");
