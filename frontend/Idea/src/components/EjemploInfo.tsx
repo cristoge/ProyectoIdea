@@ -16,7 +16,7 @@ const UserProfile = () => {
       if (currentUser) {
         const token = await currentUser.getIdToken(); // Obtén el token de ID del usuario
 
-        const response = await fetch("http://localhost:3000/ranking", {
+        const response = await fetch("http://localhost:3000/projectuser", {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`, // Incluye el token en el header de autorización
