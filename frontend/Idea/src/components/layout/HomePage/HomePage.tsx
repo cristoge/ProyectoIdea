@@ -1,16 +1,19 @@
 import { useEffect, useState } from "react";
 import { Card } from "../../common";
+import "./HomePage.css";
 
 export const HomePage = () => {
   interface DataItem {
     title: string;
     description: string;
     imageVideoUrl: string;
+    creationDate: string;
+    creatorId: string;
+    likedCount: number;
+    projectId: string;
   }
 
   const [data, setData] = useState<DataItem[]>([]); // Estado para guardar los datos
-  const [loading, setLoading] = useState(true); // Estado para mostrar un loader
-  const [error, setError] = useState(null); // Estado para manejar errores
 
   useEffect(() => {
     // Llamada a la API
@@ -23,35 +26,27 @@ export const HomePage = () => {
         const result = await response.json();
         setData(result); // Actualiza el estado con los datos obtenidos
       } catch (err) {
-        setError(err as any); // Maneja errores
-      } finally {
-        setLoading(false); // Finaliza el loading
+      // Maneja errores
       }
     };
-
     fetchData();
-  }, []); // Solo se ejecuta una vez cuando se monta el componente
-
-  if (loading) return <p>Cargando...</p>;
-  if (error) return <p>Error: {error}</p>;
+  }, []); 
 
   return (
     <div>
-      {data.map((item, index) => (
-        <Card
-          key={index} // Usa un identificador único para evitar problemas en el renderizado
-          title={item.title} // Ajusta los nombres según los campos de tu API
-          description={item.description}
-          image={item.imageVideoUrl}
-        />
-      ))}
+      <div className="home-page">
+        {data.map((item) => (
+          <Card
+            key={item.projectId} 
+            title={item.title}
+            description={item.description}
+            image={item.imageVideoUrl}
+            date={item.creationDate}
+            author={item.creatorId}
+          />
+        ))}
+      </div>
+
     </div>
   );
 };
-
-
-
-
-
-
-

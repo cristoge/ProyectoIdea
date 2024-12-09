@@ -1,23 +1,30 @@
 import './Card.css'
+import { User } from 'lucide-react'; 
 
 interface Props {
   title: string;
   description: string;
-  image: string
+  image: string,
+  date: string,
+  author: string
 }
 
 
-export const Card = ({ title, description, image }:Props) => {
+export const Card = ({ title, description, image,author }:Props) => {
   return (
-    <div className="card">
-      <div className="card-header">
-        <img src={image} alt={title} className="card-image" />
+    <article className="card">
+      <img src={image} alt={title} className="card-image" />
+      <div className="card-content">
+        <h2>{title}</h2>
+        <p>{description}</p>
+        <div className="card-meta">
+          <span >
+            <User size={16} />
+            {author}
+          </span>
+        </div>
       </div>
-      <div className="card-body">
-        <h2 className="card-title">{title}</h2>
-        <p className="card-description">{description}</p>
-      </div>
-    </div>
+    </article>
   );
 };
 

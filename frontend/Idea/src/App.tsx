@@ -15,6 +15,9 @@ function App() {
       <HomePage/>
       <CreateProject />  */}
       <Header />
+      {/* <LoginGitHub />
+      <CreateProject/> */}
+      <HomePage/>
     </div>
   );
 }
