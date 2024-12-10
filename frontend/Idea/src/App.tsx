@@ -3,22 +3,24 @@ import Login from './components/Login';
 import UserProfile from './components/EjemploInfo';
 import CreateProject from './components/AñadirProyecto';
 import LoginGitHub from './components/autenticacionGithub';
-import {Card,Header} from './components/common';
-import { HomePage } from './components/layout';
+import {Header} from './components/common';
+import { HomePage,ProjectPost} from './components/layout';
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 function App() {
   return (
-    <div className="auth-container">
-      {/* <LoginGitHub />
-      <Login />
-      <UserProfile />
-      <HomePage/>
-      <CreateProject />  */}
-      <Header />
-      {/* <LoginGitHub />
-      <CreateProject/> */}
-      <HomePage/>
-    </div>
+    <Router>
+      <div className="auth-container">
+        <Header />
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/project/:id" element={<ProjectPost />} />
+          <Route path="/profile" element={<UserProfile />} />
+          <Route path="/create-project" element={<CreateProject />} />
+          <Route path="/login-github" element={<LoginGitHub />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 

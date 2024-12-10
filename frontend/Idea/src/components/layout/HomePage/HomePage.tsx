@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Card } from "../../common";
 import "./HomePage.css";
-
+import { Link } from "react-router-dom";
 export const HomePage = () => {
   interface DataItem {
     title: string;
@@ -33,20 +33,18 @@ export const HomePage = () => {
   }, []); 
 
   return (
-    <div>
-      <div className="home-page">
-        {data.map((item) => (
+    <div className="home-page">
+      {data.map((item) => (
+        <Link to={`/project/${item.projectId}`} key={item.projectId}>
           <Card
-            key={item.projectId} 
             title={item.title}
             description={item.description}
             image={item.imageVideoUrl}
             date={item.creationDate}
             author={item.creatorId}
           />
-        ))}
-      </div>
-
+        </Link>
+      ))}
     </div>
   );
 };
