@@ -1,7 +1,9 @@
+import { useNavigate } from 'react-router-dom';
 import './Card.css'
 import { User } from 'lucide-react'; 
 
 interface Props {
+  projectId: string;
   title: string;
   description: string;
   image: string,
@@ -9,16 +11,22 @@ interface Props {
   author: string
 }
 
+export const Card = ({ title, description, image, author, projectId }: Props) => {
+  const navigate = useNavigate(); 
 
-export const Card = ({ title, description, image,author }:Props) => {
+  
+  const handleClick = () => {
+    navigate(`/project/${projectId}`);
+  };
+
   return (
-    <article className="card">
+    <article className="card" onClick={handleClick} style={{ cursor: 'pointer' }}>
       <img src={image} alt={title} className="card-image" />
       <div className="card-content">
         <h2>{title}</h2>
         <p>{description}</p>
         <div className="card-meta">
-          <span >
+          <span>
             <User size={16} />
             {author}
           </span>
@@ -27,4 +35,3 @@ export const Card = ({ title, description, image,author }:Props) => {
     </article>
   );
 };
-

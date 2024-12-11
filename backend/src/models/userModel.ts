@@ -151,17 +151,23 @@ export const updateProfilePicture = async (
     throw new Error("No se pudo actualizar la foto de perfil");
   }
 };
-// export const follow = async (followerId: string, followedId: string): Promise<void> => {
-//   try {
-//     const followData = {
-//       followerId,
-//       followedId,
-//       startDate: new Date()
-//     };
-//     await db.collection("follow").add(followData);
-//     console.log("Usuario seguido correctamente");
-//   } catch (error) {
-//     console.error("Error al seguir al usuario:", error);
-//     throw new Error("No se pudo seguir al usuario");
-//   }
-// }
+
+export const getUserByIdParams = async (userId: string): Promise<{ username: string }> => {
+  try {
+    const userDoc = await db.collection("user").doc(userId).get();
+    if (!userDoc.exists) {
+      throw new Error("Usuario no encontrado");
+    }
+    const userData = userDoc.data();
+    if (!userData) {
+      throw new Error("Datos del usuario no encontrados");
+    }
+    return {
+      username: userData.username,
+    };
+  } catch (error) {
+    console.error("Error al obtener los datos del usuario:", error);
+    throw new Error("Error al obtener los datos del usuario");
+  }
+};
+
