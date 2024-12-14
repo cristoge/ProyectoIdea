@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Card } from "../../common";
 import "./HomePage.css";
-import { Link } from "react-router-dom";
 
 export const HomePage = () => {
   interface DataItem {
@@ -52,7 +51,6 @@ export const HomePage = () => {
         console.error("Error obteniendo los proyectos:", err);
       }
     };
-
     fetchData();
   }, []);
 
@@ -60,12 +58,13 @@ export const HomePage = () => {
     <div className="home-page">
       {data.map((item) => (
           <Card
+            key={item.projectId}
             projectId={item.projectId}
             title={item.title}
             description={item.description}
             image={item.imageVideoUrl}
             date={item.creationDate}
-            author={item.creatorName || "Unknown"} // Muestra el nombre del autor o 'Unknown'
+            author={item.creatorName || "Unknown"} 
           />
         
       ))}

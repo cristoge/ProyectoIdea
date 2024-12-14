@@ -1,10 +1,10 @@
 import './App.css';
-import Login from './components/Login';
+
 import UserProfile from './components/EjemploInfo';
 import CreateProject from './components/AñadirProyecto';
 import LoginGitHub from './components/autenticacionGithub';
 import {Header} from './components/common';
-import { HomePage,ProjectPost} from './components/layout';
+import { HomePage,ProjectPost,Login} from './components/layout';
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 function App() {
   return (
