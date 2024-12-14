@@ -11,10 +11,10 @@ export const HomePage = () => {
     creatorId: string;
     likedCount: number;
     projectId: string;
-    creatorName?: string; // Nuevo campo para almacenar el nombre del creador
+    creatorName?: string; 
   }
 
-  const [data, setData] = useState<DataItem[]>([]); // Estado para guardar los datos
+  const [data, setData] = useState<DataItem[]>([]); 
 
   useEffect(() => {
     const fetchData = async () => {
@@ -38,15 +38,15 @@ export const HomePage = () => {
               const creatorData = await creatorResponse.json();
               return {
                 ...item,
-                creatorName: creatorData.username, // Asigna el nombre del creador
+                creatorName: creatorData.username, 
               };
             } catch (err) {
               console.error("Error obteniendo el nombre del creador:", err);
-              return item; // Devuelve el proyecto sin cambios en caso de error
+              return item; 
             }
           })
         );
-        setData(updatedData); // Actualiza el estado con los datos obtenidos
+        setData(updatedData);
       } catch (err) {
         console.error("Error obteniendo los proyectos:", err);
       }

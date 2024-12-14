@@ -1,9 +1,9 @@
 import { getAuth } from "firebase/auth"; 
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage"; 
-import { app } from "../../firebaseConfig"; 
+import { app } from "../../../../firebaseConfig"; 
 import { useState } from "react";
 
-const CreateProject = () => {
+export const CreateProject = () => {
   const [loading, setLoading] = useState(false);
   const [projectTitle, setProjectTitle] = useState("");
   const [projectDescription, setProjectDescription] = useState("");
@@ -105,4 +105,3 @@ const CreateProject = () => {
   );
 };
 
-export default CreateProject;
