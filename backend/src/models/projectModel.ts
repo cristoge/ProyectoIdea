@@ -27,17 +27,7 @@ export const createProject = async (
     await projectRef.set(newProject);
     console.log("Proyecto creado correctamente");
     // Crear la subcolección 'comments' vacía
-    const commentsRef = projectRef.collection("comments");
-
-    // Crear un comentario inicial (vacío o con un mensaje predeterminado)
-    const initialComment = {
-      userId: userData, 
-      content: "No hay comentarios aún", 
-      creationDate: new Date(), 
-      parentCommentId: null,
-    };
-    await commentsRef.add(initialComment);
-    console.log("Comentario inicial agregado a la subcolección 'comments'");
+    
   } catch (error) {
     console.error("Error al crear el proyecto o agregar comentarios:", error);
     throw new Error("No se pudo crear el proyecto o agregar comentarios");
@@ -186,12 +176,21 @@ export const addComment = async (
     const commentsRef = projectRef.collection("comments"); 
 
     const newComment: Comment = {
+      commentId: "", // Puedes dejarlo vacío aquí
       userId,                    
       content,                
       creationDate: new Date(),  
     };
 
-    await commentsRef.add(newComment);
+    // Se agrega el comentario y se obtiene el ID generado
+    const docRef = await commentsRef.add(newComment);
+    
+    // Ahora asignamos el ID generado al campo `commentId`
+    newComment.commentId = docRef.id;
+
+    // Se actualiza el comentario con su propio ID
+    await docRef.update({ commentId: newComment.commentId });
+
     console.log("Comentario agregado correctamente");
   } catch (error) {
     console.error("Error al agregar el comentario:", error);

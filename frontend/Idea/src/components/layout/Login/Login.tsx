@@ -15,7 +15,7 @@ export const Login = () => {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const token = await userCredential.user.getIdToken();
       console.log("ID Token:", token);
-      
+      localStorage.setItem("authToken", token);
       const response = await fetch("http://localhost:3000/login", {
         method: "POST",
         headers: {

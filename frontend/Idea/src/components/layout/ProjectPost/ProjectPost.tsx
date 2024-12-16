@@ -7,6 +7,8 @@ export const ProjectPost = () => {
   const [creatorName, setCreatorName] = useState<string>(""); 
   const [loading, setLoading] = useState<boolean>(true);
   const [comments, setComments] = useState<any[]>([]);
+  const [newComment, setNewComment] = useState<string>("");
+
   useEffect(() => {
     const fetchPostData = async () => {
       try {
@@ -29,16 +31,17 @@ export const ProjectPost = () => {
         console.error(err);
       }
     };
+
     const fetchComments = async (postId: string) => {
       try {
-      const response = await fetch(`http://localhost:3000/projects/${postId}/comments`);
-      if (!response.ok) {
-        throw new Error("Error al obtener los comentarios");
-      }
-      const commentsData = await response.json();
-      setComments(commentsData);
+        const response = await fetch(`http://localhost:3000/projects/${postId}/comments`);
+        if (!response.ok) {
+          throw new Error("Error al obtener los comentarios");
+        }
+        const commentsData = await response.json();
+        setComments(commentsData);
       } catch (err) {
-      console.error(err);
+        console.error(err);
       }
     };
 
@@ -47,37 +50,78 @@ export const ProjectPost = () => {
       fetchComments(id);
     }
 
-    if (id) {
-      fetchPostData();
+  }, [id]);
+
+  const handleCommentSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!newComment.trim()) return; // No enviar si el comentario está vacío
+
+    try {
+      const response = await fetch(`http://localhost:3000/projects/${id}/comments`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem("authToken")}`, // Añadir el token de autorización
+        },
+        body: JSON.stringify({
+          comment: newComment, // Solo necesitas el comentario
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Error al enviar el comentario");
+      }
+
+      const newCommentData = await response.json();
+      setComments([...comments, newCommentData]); // Añadir el nuevo comentario a la lista
+      setNewComment(""); // Limpiar el campo de texto
+    } catch (err) {
+      console.error(err);
     }
-  }, [id]); 
+  };
 
   if (loading) {
-    return <div>Loading...</div>; 
+    return <div>Loading...</div>;
   }
 
   if (!post) {
-    return <div>No se encontró el post.</div>; 
+    return <div>No se encontró el post.</div>;
   }
 
   return (
     <>
-    <div>
-      <h1>{post.title}</h1>
-      <p>{post.description}</p>
-      <img src={post.imageVideoUrl} alt={post.title} />
-      <p>Creado por: {creatorName}</p>
-      <p>Likes: {post.likeCounts}</p>
-    </div>
-    <div>
-      <h1>Comentarios</h1>
-      {comments.map((comment) => (
-        <div key={comment.commentId}>
-          <p>Usuario: {comment.userId}</p>
-          <p>{comment.content}</p>
-        </div>
-      ))}
-    </div>
+      <div>
+        <h1>{post.title}</h1>
+        <p>{post.description}</p>
+        <img src={post.imageVideoUrl} alt={post.title} />
+        <p>Creado por: {creatorName}</p>
+        <p>Likes: {post.likeCounts}</p>
+      </div>
+
+      <div>
+        <h1>Comentarios</h1>
+        {comments.map((comment) => (
+          <div key={comment.commentId}>
+            <p>Usuario: {comment.userId}</p>
+            <p>{comment.content}</p>
+          </div>
+        ))}
+      </div>
+
+      <div>
+        <h2>Agregar comentario</h2>
+        <form onSubmit={handleCommentSubmit}>
+          <textarea
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+            placeholder="Escribe tu comentario..."
+            rows={4}
+            cols={50}
+          />
+          <button type="submit">Enviar comentario</button>
+        </form>
+      </div>
     </>
   );
 };

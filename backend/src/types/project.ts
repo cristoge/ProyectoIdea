@@ -13,6 +13,7 @@ export interface Project {
 }
 
 export interface Comment {
+  commentId:       string;
   userId:       User['userId'];   
   content:         string;           
   creationDate: Date;             
