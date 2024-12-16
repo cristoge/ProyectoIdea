@@ -1,0 +1,30 @@
+/* HomePage.css */
+
+.home-page {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* Tres columnas fijas */
+  gap: 16px; /* Reduje el espacio entre las tarjetas */
+  padding: 20px;
+  justify-items: center;
+  background-color: #f8f8f8;
+  max-width: 1200px; /* Limita el ancho máximo para que no se estire demasiado */
+  margin: 0 auto; /* Centra el contenedor */
+}
+
+.home-page .card {
+  width: 100%;
+  max-width: 320px;
+}
+
+@media (max-width: 1024px) {
+  .home-page {
+    grid-template-columns: repeat(2, 1fr); /* Dos columnas en pantallas más pequeñas */
+  }
+}
+
+@media (max-width: 768px) {
+  .home-page {
+    grid-template-columns: 1fr; /* Una columna en pantallas muy pequeñas */
+    padding: 10px; /* Menos espacio en pantallas pequeñas */
+  }
+}

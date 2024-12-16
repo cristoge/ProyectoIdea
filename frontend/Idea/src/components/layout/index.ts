@@ -1,0 +1,5 @@
+export {HomePage} from './HomePage/HomePage'
+export {UserProfile} from './UserProfile/UserProfile'
+export {ProjectPost} from './ProjectPost/ProjectPost'
+export {Login} from './Login/Login'
+export {CreateProject} from './CreateProject/CreateProject'

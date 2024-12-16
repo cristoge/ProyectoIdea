@@ -10,6 +10,10 @@ export const userRoutes = async (app: FastifyInstance) => {
     { preHandler: authMiddleware },
     userController.getUserData
   );
+  app.get<{ Params: { userId: string } }>(
+    "/users/:userId",
+    userController.getUserByIdParams
+  );
 
   app.post<{ Body: User }>("/users", userController.addUserWithEmail);
   app.post("/users/github", userController.addUserWithGithub);

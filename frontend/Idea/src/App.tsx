@@ -1,22 +1,23 @@
 import './App.css';
-import { app } from '../firebaseConfig';  // Asegúrate de que firebaseConfig.js esté bien configurado
-import { getAuth, GithubAuthProvider, signInWithPopup } from "firebase/auth";
-import Login from './components/Login';
 import UserProfile from './components/EjemploInfo';
-import CreateProject from './components/AñadirProyecto';
-import LoginGitHub from './components/autenticacionGithub';
+import {Header} from './components/common';
+import { HomePage,ProjectPost,Login,CreateProject} from './components/layout';
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 function App() {
-  
-
   return (
-    <div className="auth-container">
-      <LoginGitHub />
-      <Login />
-      <UserProfile />
-      <CreateProject />
-
-
-    </div>
+    <Router>
+      <div className="auth-container">
+        <Header />
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/project/:id" element={<ProjectPost />} />
+          <Route path="/profile" element={<UserProfile />} />
+          <Route path="/create-project" element={<CreateProject />} />
+          {/* <Route path="/login-github" element={<LoginGitHub />} /> */}
+        </Routes>
+      </div>
+    </Router>
   );
 }
 

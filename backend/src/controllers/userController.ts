@@ -29,6 +29,20 @@ export const getUserData = async (
   }
 };
 
+export const getUserByIdParams = async (
+  request: FastifyRequest<{ Params: { userId: string } }>,
+  reply: FastifyReply
+) => {
+  try {
+    const { userId } = request.params;
+    const user = await userModel.getUserByIdParams(userId);
+    reply.send(user);
+  } catch (error) {
+    request.log.error(error);
+    reply.status(500).send({ error: "Error al obtener el usuario" });
+  }
+}
+
 export const addUserWithGithub = async (
   request: FastifyRequest<{
     Body: {
