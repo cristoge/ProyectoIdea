@@ -6,6 +6,7 @@ export const ProjectPost = () => {
   const [post, setPost] = useState<any>(null); 
   const [creatorName, setCreatorName] = useState<string>(""); 
   const [loading, setLoading] = useState<boolean>(true);
+  const [comments, setComments] = useState<any[]>([]);
   useEffect(() => {
     const fetchPostData = async () => {
       try {
@@ -28,6 +29,23 @@ export const ProjectPost = () => {
         console.error(err);
       }
     };
+    const fetchComments = async (postId: string) => {
+      try {
+      const response = await fetch(`http://localhost:3000/projects/${postId}/comments`);
+      if (!response.ok) {
+        throw new Error("Error al obtener los comentarios");
+      }
+      const commentsData = await response.json();
+      setComments(commentsData);
+      } catch (err) {
+      console.error(err);
+      }
+    };
+
+    if (id) {
+      fetchPostData();
+      fetchComments(id);
+    }
 
     if (id) {
       fetchPostData();
@@ -53,7 +71,12 @@ export const ProjectPost = () => {
     </div>
     <div>
       <h1>Comentarios</h1>
-      
+      {comments.map((comment) => (
+        <div key={comment.commentId}>
+          <p>Usuario: {comment.userId}</p>
+          <p>{comment.content}</p>
+        </div>
+      ))}
     </div>
     </>
   );
