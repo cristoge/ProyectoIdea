@@ -1,25 +1,31 @@
 import './Header.css';
+import { Link } from 'react-router-dom';
+
 export const Header = () => {
-  
   return (
     <div className="container">
       <nav>
         <ul className="menu">
           <li>
-            <a href="/">Inicio</a>
+            <Link to="/">Inicio</Link>
           </li>
           <li>
-            <a href="/Proyectos">Proyectos</a>
+            <Link to="/Ranking">Ranking</Link>
           </li>
           <li>
-            <a href="/Ranking">Ranking</a>
+            <Link to="/Login">Iniciar sesión</Link>
+          </li>
+          <li>
+            <Link to="/create-project">Crear proyecto</Link>
           </li>
         </ul>
         <div className="right-section">
           <input type="text" className="search-bar" placeholder="Buscar..." />
-          <div className="avatar">
-          <img src="11.jpeg" alt="Avatar" />
-          </div>
+            <div className="avatar">
+            <Link to="/profile">
+              <img src="11.jpeg" alt="Avatar" />
+            </Link>
+            </div>
         </div>
       </nav>
     </div>

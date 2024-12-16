@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 export const ProjectPost = () => {
   const { id } = useParams<{ id: string }>(); 
   const [post, setPost] = useState<any>(null); 
+  const [creatorName, setCreatorName] = useState<string>(""); 
   const [loading, setLoading] = useState<boolean>(true); 
 
   useEffect(() => {
@@ -16,6 +17,13 @@ export const ProjectPost = () => {
         const postData = await response.json();
         setPost(postData); 
         setLoading(false); 
+                
+        const creatorResponse = await fetch(`http://localhost:3000/users/${postData.creatorId}`);
+        if (!creatorResponse.ok) {
+          throw new Error("Error al obtener los datos del creador");
+        }
+        const creatorData = await creatorResponse.json();
+        setCreatorName(creatorData.username); 
       } catch (err) {
         setLoading(false);
         console.error(err);
@@ -40,8 +48,7 @@ export const ProjectPost = () => {
       <h1>{post.title}</h1>
       <p>{post.description}</p>
       <img src={post.imageVideoUrl} alt={post.title} />
-      <p>Creado por: {post.creatorId}</p>
-      {/* <p>Fecha de creación: {post.creationDate}</p> */}
+      <p>Creado por: {creatorName}</p>
       <p>Likes: {post.likeCounts}</p>
     </div>
   );
