@@ -3,6 +3,8 @@ import { Project } from "../types/project";
 import { Comment } from "../types/project";
 // Función para crear un nuevo proyecto
 
+
+//Se crea un proyecto con los datos que se pasan desde el front abajo indicados
 export const createProject = async (
   projectData: Project,
   userData: string
@@ -33,6 +35,8 @@ export const createProject = async (
     throw new Error("No se pudo crear el proyecto o agregar comentarios");
   }
 };
+
+
 // Función para editar un proyecto existente
 export const updateProject = async (
   projectId: string,

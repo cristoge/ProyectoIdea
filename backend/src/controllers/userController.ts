@@ -3,6 +3,7 @@ import * as userModel from "../models/userModel"; // Importa el modelo de usuari
 import { User } from "../types/user";
 import { auth } from "firebase-admin";
 
+// Obtener todos los usuarios de la base de datos
 export const getUsers = async (
   request: FastifyRequest,
   reply: FastifyReply
@@ -15,6 +16,8 @@ export const getUsers = async (
     reply.status(500).send({ error: "Error al obtener los usuarios" });
   }
 };
+
+// Obtener los datos de un usuario, basado en el ID del usuario autenticado
 export const getUserData = async (
   request: FastifyRequest,
   reply: FastifyReply
@@ -29,6 +32,7 @@ export const getUserData = async (
   }
 };
 
+// Obtener los datos de un usuario, basado en el ID del usuario autenticado
 export const getUserByIdParams = async (
   request: FastifyRequest<{ Params: { userId: string } }>,
   reply: FastifyReply
@@ -43,6 +47,7 @@ export const getUserByIdParams = async (
   }
 }
 
+// Agregar un usuario con GitHub
 export const addUserWithGithub = async (
   request: FastifyRequest<{
     Body: {
@@ -74,11 +79,12 @@ export const addUserWithGithub = async (
   }
 };
 
+
+// Agregar un usuario con email y contraseña, no aplicado aun
 export const addUserWithEmail = async (
   request: FastifyRequest<{ Body: User }>,
   reply: FastifyReply
 ): Promise<void> => {
-  //
   try {
     //devuelve el id pero ahora mismo no lo estoy usando
     const docRef = await userModel.addUserWithEmail(request.body);
@@ -89,6 +95,8 @@ export const addUserWithEmail = async (
   }
 };
 
+
+//No aplicado aun
 export const deleteUser = async (
   request: FastifyRequest<{ Params: { userId: string } }>,
   reply: FastifyReply
@@ -103,6 +111,7 @@ export const deleteUser = async (
   }
 };
 
+//No aplicado se hace en el front
 export const loginUser = async (
   request: FastifyRequest<{ Body: { token: string } }>,
   reply: FastifyReply
@@ -121,20 +130,5 @@ export const loginUser = async (
   } catch (error) {
     console.error("Error ", error);
     reply.status(401).send({ error: "Invalid or expired token" });
-  }
-};
-
-export const updateProfilePicture = async (
-  request: FastifyRequest<{ Body: { profilePicture: string } }>,
-  reply: FastifyReply
-) => {
-  try {
-    const { profilePicture } = request.body;
-    const userId = request.user.uid;
-    await userModel.updateProfilePicture(userId, profilePicture);
-    reply.send({ message: "Foto de perfil actualizada" });
-  } catch (error) {
-    request.log.error(error);
-    reply.status(500).send({ error: "Error al actualizar la foto de perfil" });
   }
 };

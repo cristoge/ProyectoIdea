@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 export const ProjectPost = () => {
-  const { id } = useParams<{ id: string }>(); 
-  const [post, setPost] = useState<any>(null); 
-  const [creatorName, setCreatorName] = useState<string>(""); 
+  const { id } = useParams<{ id: string }>();
+  const [post, setPost] = useState<any>(null);
+  const [creatorName, setCreatorName] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
   const [comments, setComments] = useState<any[]>([]);
   const [newComment, setNewComment] = useState<string>("");
@@ -17,15 +17,15 @@ export const ProjectPost = () => {
           throw new Error("Error al obtener los datos del post");
         }
         const postData = await response.json();
-        setPost(postData); 
-        setLoading(false); 
-                
+        setPost(postData);
+        setLoading(false);
+
         const creatorResponse = await fetch(`http://localhost:3000/users/${postData.creatorId}`);
         if (!creatorResponse.ok) {
           throw new Error("Error al obtener los datos del creador");
         }
         const creatorData = await creatorResponse.json();
-        setCreatorName(creatorData.username); 
+        setCreatorName(creatorData.username);
       } catch (err) {
         setLoading(false);
         console.error(err);
@@ -49,7 +49,6 @@ export const ProjectPost = () => {
       fetchPostData();
       fetchComments(id);
     }
-
   }, [id]);
 
   const handleCommentSubmit = async (e: React.FormEvent) => {
@@ -81,6 +80,33 @@ export const ProjectPost = () => {
     }
   };
 
+  // Función para manejar el clic en el botón de "Dar Like"
+  const handleLike = async () => {
+    try {
+      const response = await fetch(`http://localhost:3000/projects/${id}/like`, {
+        method: "PATCH", // Usamos PATCH para actualizar los likes
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem("authToken")}`, 
+        },
+        body: JSON.stringify({}), // No necesitamos enviar datos adicionales
+      });
+
+      if (!response.ok) {
+        throw new Error("Error al dar like al proyecto");
+      }
+
+      // Si la respuesta es exitosa, actualizamos el contador de likes
+      const updatedPost = await response.json();
+      setPost((prevPost: any) => ({
+        ...prevPost,
+        likeCounts: updatedPost.likeCounts, // Actualizamos los likes
+      }));
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -97,6 +123,10 @@ export const ProjectPost = () => {
         <img src={post.imageVideoUrl} alt={post.title} />
         <p>Creado por: {creatorName}</p>
         <p>Likes: {post.likeCounts}</p>
+        <p>
+          Dar Like
+          <button onClick={handleLike}>👍</button> {/* Aquí está el botón de "Like" */}
+        </p>
       </div>
 
       <div>

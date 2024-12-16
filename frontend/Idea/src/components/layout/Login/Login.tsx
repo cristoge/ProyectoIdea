@@ -52,6 +52,7 @@ export const Login = () => {
         const idToken = await user.getIdToken();
         const credential = GithubAuthProvider.credentialFromResult(response);
         const githubToken = credential ? credential.accessToken : null;
+        localStorage.setItem("authToken", idToken);
         console.log("GithubToken:", githubToken);
         console.log("ID Token:", idToken);
 

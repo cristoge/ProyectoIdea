@@ -46,4 +46,11 @@ export const projectRoutes = async (app: FastifyInstance) => {
     "/projects/:projectId/comments",  
     projectController.getComments
   );
+
+  app.patch<{ Params: { projectId: string } }>(
+    "/projects/:projectId/like",
+    { preHandler: [authMiddleware] },
+    projectController.likeProject
+  );
+
 };
