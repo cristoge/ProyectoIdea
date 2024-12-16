@@ -4,9 +4,12 @@ export interface User {
   email:           string;
   password?:        string;
   profilePicture?: string | null;
-  githubId?:       string | null;
-  githubToken?:    string | null;
   role:            string;
+}
+
+export interface githubData {
+  githubId: string;
+  githubToken: string;
 }
 
 

@@ -97,8 +97,6 @@ export const addUserWithEmail = async (userData: User): Promise<void> => {
       email,
       password,
       profilePicture: null,
-      githubId: null,
-      githubToken: null,
       role: role || "Normal",
     };
 

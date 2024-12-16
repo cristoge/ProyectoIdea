@@ -133,3 +133,34 @@ export const rankingProjects = async (
     reply.status(500).send({ error: "Error al obtener los proyectos" });
   }
 };
+
+
+export const addComment = async (
+  request: FastifyRequest<{ Body: { comment: string }; Params: { projectId: string } }>,
+  reply: FastifyReply
+): Promise<void> => {
+  try {
+    const { projectId } = request.params;
+    const { comment } = request.body;
+    const userId = request.user.user_id;
+    await projectModel.addComment(projectId, userId, comment);
+    reply.send({ message: "Comentario agregado correctamente" });
+  } catch (error) {
+    request.log.error(error);
+    reply.status(500).send({ error: "Error al agregar el comentario" });
+  }
+}
+
+export const getComments = async (
+  request: FastifyRequest<{ Params: { projectId: string } }>,
+  reply: FastifyReply
+): Promise<void> => {
+  try {
+    const { projectId } = request.params;
+    const comments = await projectModel.getCommentsByProjectId(projectId);
+    reply.send(comments);
+  } catch (error) {
+    request.log.error(error);
+    reply.status(500).send({ error: "Error al obtener los comentarios" });
+  }
+}

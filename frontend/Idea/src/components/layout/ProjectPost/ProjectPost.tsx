@@ -5,8 +5,7 @@ export const ProjectPost = () => {
   const { id } = useParams<{ id: string }>(); 
   const [post, setPost] = useState<any>(null); 
   const [creatorName, setCreatorName] = useState<string>(""); 
-  const [loading, setLoading] = useState<boolean>(true); 
-
+  const [loading, setLoading] = useState<boolean>(true);
   useEffect(() => {
     const fetchPostData = async () => {
       try {
@@ -44,6 +43,7 @@ export const ProjectPost = () => {
   }
 
   return (
+    <>
     <div>
       <h1>{post.title}</h1>
       <p>{post.description}</p>
@@ -51,5 +51,10 @@ export const ProjectPost = () => {
       <p>Creado por: {creatorName}</p>
       <p>Likes: {post.likeCounts}</p>
     </div>
+    <div>
+      <h1>Comentarios</h1>
+      
+    </div>
+    </>
   );
 };

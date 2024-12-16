@@ -35,4 +35,15 @@ export const projectRoutes = async (app: FastifyInstance) => {
     projectController.getProjectsByUser
   );
   app.get("/ranking", projectController.rankingProjects);
+
+  app.post<{ Body: { comment: string }, Params: { projectId: string } }>(
+    "/projects/:projectId/comments",  
+    { preHandler: [authMiddleware] },  
+    projectController.addComment
+  );
+
+  app.get<{ Params: { projectId: string } }>(
+    "/projects/:projectId/comments",  
+    projectController.getComments
+  );
 };

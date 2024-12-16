@@ -1,5 +1,6 @@
 import { db } from "../config/firebaseconfig";
 import { Project } from "../types/project";
+import { Comment } from "../types/project";
 // Función para crear un nuevo proyecto
 
 export const createProject = async (
@@ -25,12 +26,23 @@ export const createProject = async (
 
     await projectRef.set(newProject);
     console.log("Proyecto creado correctamente");
+    // Crear la subcolección 'comments' vacía
+    const commentsRef = projectRef.collection("comments");
+
+    // Crear un comentario inicial (vacío o con un mensaje predeterminado)
+    const initialComment = {
+      userId: userData, 
+      content: "No hay comentarios aún", 
+      creationDate: new Date(), 
+      parentCommentId: null,
+    };
+    await commentsRef.add(initialComment);
+    console.log("Comentario inicial agregado a la subcolección 'comments'");
   } catch (error) {
-    console.error("Errora al crear el proyecto:", error);
-    throw new Error("No se pudo crear el proyecto");
+    console.error("Error al crear el proyecto o agregar comentarios:", error);
+    throw new Error("No se pudo crear el proyecto o agregar comentarios");
   }
 };
-
 // Función para editar un proyecto existente
 export const updateProject = async (
   projectId: string,
@@ -162,3 +174,43 @@ export const rankingProjects = async (): Promise<Project[]> => {
     throw new Error("No se pudieron obtener los proyectos");
   }
 };
+
+
+export const addComment = async (
+  projectId: string,        
+  userId: string,           
+  content: string
+): Promise<void> => {
+  try {
+    const projectRef = db.collection("project").doc(projectId); 
+    const commentsRef = projectRef.collection("comments"); 
+
+    const newComment: Comment = {
+      userId,                    
+      content,                
+      creationDate: new Date(),  
+    };
+
+    await commentsRef.add(newComment);
+    console.log("Comentario agregado correctamente");
+  } catch (error) {
+    console.error("Error al agregar el comentario:", error);
+    throw new Error("No se pudo agregar el comentario");
+  }
+};
+
+export const getCommentsByProjectId = async (
+  projectId: string
+): Promise<Comment[]> => {
+  try {
+    const projectRef = db.collection("project").doc(projectId);
+    const commentsSnapshot = await projectRef.collection("comments").get();
+    const comments: Comment[] = commentsSnapshot.docs.map(
+      (doc) => doc.data() as Comment
+    );
+    return comments;
+  } catch (error) {
+    console.error("Error al obtener los comentarios:", error);
+    throw new Error("No se pudieron obtener los comentarios");
+  }
+}
