@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import './ProjectPost.css';
+import "./ProjectPost.css";
 
 export const ProjectPost = () => {
   const { id } = useParams<{ id: string }>();
@@ -21,7 +21,9 @@ export const ProjectPost = () => {
         setPost(postData);
         setLoading(false);
 
-        const creatorResponse = await fetch(`http://localhost:3000/users/${postData.creatorId}`);
+        const creatorResponse = await fetch(
+          `http://localhost:3000/users/${postData.creatorId}`
+        );
         if (!creatorResponse.ok) {
           throw new Error("Error al obtener los datos del creador");
         }
@@ -35,7 +37,9 @@ export const ProjectPost = () => {
 
     const fetchComments = async (postId: string) => {
       try {
-        const response = await fetch(`http://localhost:3000/projects/${postId}/comments`);
+        const response = await fetch(
+          `http://localhost:3000/projects/${postId}/comments`
+        );
         if (!response.ok) {
           throw new Error("Error al obtener los comentarios");
         }
@@ -43,7 +47,9 @@ export const ProjectPost = () => {
 
         const commentsWithUsernames = await Promise.all(
           commentsData.map(async (comment: any) => {
-            const userResponse = await fetch(`http://localhost:3000/users/${comment.userId}`);
+            const userResponse = await fetch(
+              `http://localhost:3000/users/${comment.userId}`
+            );
             if (!userResponse.ok) {
               throw new Error("Error al obtener el nombre de usuario");
             }
@@ -82,16 +88,19 @@ export const ProjectPost = () => {
     if (!newComment.trim()) return;
 
     try {
-      const response = await fetch(`http://localhost:3000/projects/${id}/comments`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${localStorage.getItem("authToken")}`,
-        },
-        body: JSON.stringify({
-          comment: newComment,
-        }),
-      });
+      const response = await fetch(
+        `http://localhost:3000/projects/${id}/comments`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          },
+          body: JSON.stringify({
+            comment: newComment,
+          }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Error al enviar el comentario");
@@ -99,7 +108,7 @@ export const ProjectPost = () => {
 
       const newCommentData = await response.json();
       setComments([...comments, newCommentData]);
-      setNewComment(""); 
+      setNewComment("");
     } catch (err) {
       console.error(err);
     }
@@ -107,14 +116,17 @@ export const ProjectPost = () => {
 
   const handleLike = async () => {
     try {
-      const response = await fetch(`http://localhost:3000/projects/${id}/like`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${localStorage.getItem("authToken")}`,
-        },
-        body: JSON.stringify({}),
-      });
+      const response = await fetch(
+        `http://localhost:3000/projects/${id}/like`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          },
+          body: JSON.stringify({}),
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Error al dar like al proyecto");
@@ -141,13 +153,22 @@ export const ProjectPost = () => {
   return (
     <div className="project-post">
       <h1>{post.title}</h1>
-      <p>{post.description}</p>
       <img src={post.imageVideoUrl} alt={post.title} />
+      <p>{post.description}</p>
+      <div className="tags-info">
+        {post.tags.map((tag: string, index: number) => (
+          <p key={index} className="tag">
+            {tag}
+          </p>
+        ))}
+      </div>
       <div className="project-info">
         <p className="creator-info">Creado por: {creatorName}</p>
         <div className="like-info">
           <span>Likes: {post.likeCounts}</span>
-          <button className="like-button" onClick={handleLike}>❤️</button>
+          <button className="like-button" onClick={handleLike}>
+            ❤️
+          </button>
         </div>
       </div>
 
@@ -176,4 +197,3 @@ export const ProjectPost = () => {
     </div>
   );
 };
-
