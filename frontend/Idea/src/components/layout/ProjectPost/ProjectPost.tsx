@@ -39,7 +39,23 @@ export const ProjectPost = () => {
           throw new Error("Error al obtener los comentarios");
         }
         const commentsData = await response.json();
-        setComments(commentsData);
+
+        // Hacemos otra petición para obtener el nombre de cada usuario
+        const commentsWithUsernames = await Promise.all(
+          commentsData.map(async (comment: any) => {
+            const userResponse = await fetch(`http://localhost:3000/users/${comment.userId}`);
+            if (!userResponse.ok) {
+              throw new Error("Error al obtener el nombre de usuario");
+            }
+            const userData = await userResponse.json();
+            return {
+              ...comment,
+              username: userData.username, // Agregamos el nombre de usuario al comentario
+            };
+          })
+        );
+
+        setComments(commentsWithUsernames); // Guardamos los comentarios con los nombres de usuario
       } catch (err) {
         console.error(err);
       }
@@ -142,7 +158,7 @@ export const ProjectPost = () => {
         <h1>Comentarios</h1>
         {comments.map((comment) => (
           <div key={comment.commentId}>
-            <p>Usuario: {comment.userId}</p>
+            <p>Usuario: {comment.username}</p> {/* Ahora mostramos el nombre de usuario */}
             <p>{comment.content}</p>
           </div>
         ))}
@@ -164,3 +180,4 @@ export const ProjectPost = () => {
     </>
   );
 };
+

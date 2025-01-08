@@ -1,6 +1,6 @@
-import { getAuth } from "firebase/auth"; 
-import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage"; 
-import { app } from "../../../../firebaseConfig"; 
+import { getAuth } from "firebase/auth";
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { app } from "../../../../firebaseConfig";
 import { useState } from "react";
 
 export const CreateProject = () => {
@@ -8,11 +8,24 @@ export const CreateProject = () => {
   const [projectTitle, setProjectTitle] = useState("");
   const [projectDescription, setProjectDescription] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [tags, setTags] = useState<string[]>([]);
+  const [newTag, setNewTag] = useState("");
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setImageFile(e.target.files[0]);
     }
+  };
+
+  const handleAddTag = () => {
+    if (newTag && !tags.includes(newTag)) {
+      setTags((prevTags) => [...prevTags, newTag]);
+      setNewTag(""); // Limpiar el campo de nuevo tag
+    }
+  };
+
+  const handleRemoveTag = (tagToRemove: string) => {
+    setTags((prevTags) => prevTags.filter((tag) => tag !== tagToRemove));
   };
 
   const uploadImageToStorage = async (file: File): Promise<string> => {
@@ -55,6 +68,7 @@ export const CreateProject = () => {
         title: projectTitle,
         description: projectDescription,
         imageVideoUrl, // URL de la imagen subida
+        tags, // Los tags agregados
       };
 
       const response = await fetch("http://localhost:3000/projects", {
@@ -95,6 +109,27 @@ export const CreateProject = () => {
         onChange={(e) => setProjectDescription(e.target.value)}
       />
       <input type="file" accept="image/*" onChange={handleFileChange} />
+
+      <div>
+        <h3>Tags</h3>
+        <input
+          type="text"
+          placeholder="Add a tag"
+          value={newTag}
+          onChange={(e) => setNewTag(e.target.value)}
+        />
+        <button type="button" onClick={handleAddTag}>
+          Add Tag
+        </button>
+        <ul>
+          {tags.map((tag, index) => (
+            <li key={index}>
+              {tag} <button onClick={() => handleRemoveTag(tag)}>Remove</button>
+            </li>
+          ))}
+        </ul>
+      </div>
+
       <button
         onClick={createProject}
         disabled={loading || !projectTitle || !projectDescription || !imageFile}
@@ -104,4 +139,3 @@ export const CreateProject = () => {
     </div>
   );
 };
-
