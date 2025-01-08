@@ -23,7 +23,7 @@ export const Header = () => {
           <input type="text" className="search-bar" placeholder="Buscar..." />
             <div className="avatar">
             <Link to="/profile">
-              <img src="11.jpeg" alt="Avatar" />
+              <img src="/icon.svg" alt="Avatar" />
             </Link>
             </div>
         </div>

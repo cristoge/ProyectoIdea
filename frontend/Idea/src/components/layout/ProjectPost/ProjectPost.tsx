@@ -48,23 +48,34 @@ export const ProjectPost = () => {
     if (id) {
       fetchPostData();
       fetchComments(id);
+
+      // Establecemos un intervalo para hacer polling cada 5 segundos
+      const pollingInterval = setInterval(() => {
+        fetchComments(id); // Actualizamos los comentarios periódicamente
+        fetchPostData(); // También actualizamos el post en caso de que los likes cambien
+      }, 5000); // 5 segundos
+
+      // Limpiar el intervalo al desmontar el componente
+      return () => {
+        clearInterval(pollingInterval);
+      };
     }
   }, [id]);
 
   const handleCommentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!newComment.trim()) return; // No enviar si el comentario está vacío
+    if (!newComment.trim()) return;
 
     try {
       const response = await fetch(`http://localhost:3000/projects/${id}/comments`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${localStorage.getItem("authToken")}`, // Añadir el token de autorización
+          "Authorization": `Bearer ${localStorage.getItem("authToken")}`,
         },
         body: JSON.stringify({
-          comment: newComment, // Solo necesitas el comentario
+          comment: newComment,
         }),
       });
 
@@ -73,34 +84,32 @@ export const ProjectPost = () => {
       }
 
       const newCommentData = await response.json();
-      setComments([...comments, newCommentData]); // Añadir el nuevo comentario a la lista
-      setNewComment(""); // Limpiar el campo de texto
+      setComments([...comments, newCommentData]);
+      setNewComment(""); 
     } catch (err) {
       console.error(err);
     }
   };
 
-  // Función para manejar el clic en el botón de "Dar Like"
   const handleLike = async () => {
     try {
       const response = await fetch(`http://localhost:3000/projects/${id}/like`, {
-        method: "PATCH", // Usamos PATCH para actualizar los likes
+        method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${localStorage.getItem("authToken")}`, 
+          "Authorization": `Bearer ${localStorage.getItem("authToken")}`,
         },
-        body: JSON.stringify({}), // No necesitamos enviar datos adicionales
+        body: JSON.stringify({}),
       });
 
       if (!response.ok) {
         throw new Error("Error al dar like al proyecto");
       }
 
-      // Si la respuesta es exitosa, actualizamos el contador de likes
       const updatedPost = await response.json();
       setPost((prevPost: any) => ({
         ...prevPost,
-        likeCounts: updatedPost.likeCounts, // Actualizamos los likes
+        likeCounts: updatedPost.likeCounts,
       }));
     } catch (err) {
       console.error(err);
@@ -120,7 +129,7 @@ export const ProjectPost = () => {
       <div>
         <h1>{post.title}</h1>
         <p>{post.description}</p>
-        <img src={post.imageVideoUrl} alt={post.title} />
+        <img src={post.imageVideoUrl} alt={post.title} style={{ maxHeight: "500px", width: "auto" }} />
         <p>Creado por: {creatorName}</p>
         <p>Likes: {post.likeCounts}</p>
         <p>
