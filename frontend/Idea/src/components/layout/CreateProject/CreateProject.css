@@ -2,7 +2,7 @@
   max-width: 600px;
   margin: 0 auto;
   padding: 20px;
-  background-color: #f5f5f5;
+  background-color: white;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -26,7 +26,7 @@
 .form-group input[type="text"],
 .form-group textarea {
   width: 100%;
-  padding: 8px;
+  padding: 8px 0px;
   border: 1px solid #ddd;
   border-radius: 4px;
 }
@@ -46,7 +46,7 @@
 
 .add-tag-btn {
   padding: 8px 16px;
-  background-color: #4CAF50;
+  background-color: #4A5568;
   color: white;
   border: none;
   border-radius: 4px;
@@ -86,7 +86,7 @@
 .create-project-btn {
   width: 100%;
   padding: 10px;
-  background-color: #007bff;
+  background-color: #4A5568;
   color: white;
   border: none;
   border-radius: 4px;

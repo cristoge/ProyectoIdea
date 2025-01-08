@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import './ProjectPost.css';
 
 export const ProjectPost = () => {
   const { id } = useParams<{ id: string }>();
@@ -40,7 +41,6 @@ export const ProjectPost = () => {
         }
         const commentsData = await response.json();
 
-        // Hacemos otra petición para obtener el nombre de cada usuario
         const commentsWithUsernames = await Promise.all(
           commentsData.map(async (comment: any) => {
             const userResponse = await fetch(`http://localhost:3000/users/${comment.userId}`);
@@ -50,12 +50,12 @@ export const ProjectPost = () => {
             const userData = await userResponse.json();
             return {
               ...comment,
-              username: userData.username, // Agregamos el nombre de usuario al comentario
+              username: userData.username,
             };
           })
         );
 
-        setComments(commentsWithUsernames); // Guardamos los comentarios con los nombres de usuario
+        setComments(commentsWithUsernames);
       } catch (err) {
         console.error(err);
       }
@@ -65,13 +65,11 @@ export const ProjectPost = () => {
       fetchPostData();
       fetchComments(id);
 
-      // Establecemos un intervalo para hacer polling cada 5 segundos
       const pollingInterval = setInterval(() => {
-        fetchComments(id); // Actualizamos los comentarios periódicamente
-        fetchPostData(); // También actualizamos el post en caso de que los likes cambien
-      }, 5000); // 5 segundos
+        fetchComments(id);
+        fetchPostData();
+      }, 5000);
 
-      // Limpiar el intervalo al desmontar el componente
       return () => {
         clearInterval(pollingInterval);
       };
@@ -133,38 +131,37 @@ export const ProjectPost = () => {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div className="loading">Loading...</div>;
   }
 
   if (!post) {
-    return <div>No se encontró el post.</div>;
+    return <div className="not-found">No se encontró el post.</div>;
   }
 
   return (
-    <>
-      <div>
-        <h1>{post.title}</h1>
-        <p>{post.description}</p>
-        <img src={post.imageVideoUrl} alt={post.title} style={{ maxHeight: "500px", width: "auto" }} />
-        <p>Creado por: {creatorName}</p>
-        <p>Likes: {post.likeCounts}</p>
-        <p>
-          Dar Like
-          <button onClick={handleLike}>👍</button> {/* Aquí está el botón de "Like" */}
-        </p>
+    <div className="project-post">
+      <h1>{post.title}</h1>
+      <p>{post.description}</p>
+      <img src={post.imageVideoUrl} alt={post.title} />
+      <div className="project-info">
+        <p className="creator-info">Creado por: {creatorName}</p>
+        <div className="like-info">
+          <span>Likes: {post.likeCounts}</span>
+          <button className="like-button" onClick={handleLike}>❤️</button>
+        </div>
       </div>
 
-      <div>
-        <h1>Comentarios</h1>
+      <div className="comments-section">
+        <h2>Comentarios</h2>
         {comments.map((comment) => (
-          <div key={comment.commentId}>
-            <p>Usuario: {comment.username}</p> {/* Ahora mostramos el nombre de usuario */}
-            <p>{comment.content}</p>
+          <div key={comment.commentId} className="comment">
+            <p className="comment-user">{comment.username}</p>
+            <p className="comment-content">{comment.content}</p>
           </div>
         ))}
       </div>
 
-      <div>
+      <div className="comment-form">
         <h2>Agregar comentario</h2>
         <form onSubmit={handleCommentSubmit}>
           <textarea
@@ -172,12 +169,11 @@ export const ProjectPost = () => {
             onChange={(e) => setNewComment(e.target.value)}
             placeholder="Escribe tu comentario..."
             rows={4}
-            cols={50}
           />
           <button type="submit">Enviar comentario</button>
         </form>
       </div>
-    </>
+    </div>
   );
 };
 

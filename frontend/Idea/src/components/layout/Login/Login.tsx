@@ -84,11 +84,11 @@ export const Login = () => {
 
   return (
     <div className="auth-container">
-      <h2>Iniciar sesión</h2>
       <form className="login-form" onSubmit={(e) => {
         e.preventDefault();
         loginWithEmail(email, password);
       }}>
+        <h2>Iniciar sesión</h2>
         <div className="input-group">
           <label>Email:</label>
           <input 
@@ -110,15 +110,14 @@ export const Login = () => {
           />
         </div>
         <button type="submit" className="login-button">Iniciar sesión</button>
+      <button onClick={loginWithGitHub} className="login-button">
+        Iniciar sesión con GitHub
+      </button>
       </form>
 
       {error && <p className="error-message">{error}</p>}
 
-      <h3>O</h3>
 
-      <button onClick={loginWithGitHub} className="github-button">
-        Iniciar sesión con GitHub
-      </button>
     </div>
   );
 };
