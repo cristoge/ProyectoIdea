@@ -3,6 +3,7 @@ import * as userModel from "../models/userModel"; // Importa el modelo de usuari
 import { User } from "../types/user";
 import { auth } from "firebase-admin";
 
+// Obtener todos los usuarios de la base de datos
 export const getUsers = async (
   request: FastifyRequest,
   reply: FastifyReply
@@ -15,6 +16,8 @@ export const getUsers = async (
     reply.status(500).send({ error: "Error al obtener los usuarios" });
   }
 };
+
+// Obtener los datos de un usuario, basado en el ID del usuario autenticado
 export const getUserData = async (
   request: FastifyRequest,
   reply: FastifyReply
@@ -29,6 +32,7 @@ export const getUserData = async (
   }
 };
 
+// Obtener los datos de un usuario, basado en el ID del usuario autenticado
 export const getUserByIdParams = async (
   request: FastifyRequest<{ Params: { userId: string } }>,
   reply: FastifyReply
@@ -43,6 +47,7 @@ export const getUserByIdParams = async (
   }
 }
 
+// Agregar un usuario con GitHub
 export const addUserWithGithub = async (
   request: FastifyRequest<{
     Body: {
@@ -74,21 +79,36 @@ export const addUserWithGithub = async (
   }
 };
 
+
+// Agregar un usuario con email y contraseña, no aplicado aun
 export const addUserWithEmail = async (
   request: FastifyRequest<{ Body: User }>,
   reply: FastifyReply
 ): Promise<void> => {
-  //
   try {
-    //devuelve el id pero ahora mismo no lo estoy usando
-    const docRef = await userModel.addUserWithEmail(request.body);
-    reply.send({ message: "Usuario agregado" });
+    const { email, password, username, role } = request.body;
+
+    // Validación de campos obligatorios
+    if (!email || !password || !username) {
+      return reply.status(400).send({ error: "Faltan datos obligatorios" });
+    }
+
+    // Añade el usuario utilizando el método en el modelo (presumiblemente interactuando con Firestore o Firebase Auth)
+    const docRef = await userModel.addUserWithEmail({ email, password, username, role, userId: "", description: "" });
+
+    // Respuesta exitosa
+    reply.send({ message: "Usuario agregado correctamente"});
   } catch (error) {
     request.log.error(error);
+
+    // Respuesta de error
     reply.status(500).send({ error: "Error al agregar el usuario" });
   }
 };
 
+
+
+//No aplicado aun
 export const deleteUser = async (
   request: FastifyRequest<{ Params: { userId: string } }>,
   reply: FastifyReply
@@ -103,6 +123,7 @@ export const deleteUser = async (
   }
 };
 
+//No aplicado se hace en el front
 export const loginUser = async (
   request: FastifyRequest<{ Body: { token: string } }>,
   reply: FastifyReply
@@ -124,17 +145,17 @@ export const loginUser = async (
   }
 };
 
-export const updateProfilePicture = async (
-  request: FastifyRequest<{ Body: { profilePicture: string } }>,
+export const editUser = async (
+  request: FastifyRequest<{ Body: Partial<User> }>,
   reply: FastifyReply
 ) => {
   try {
-    const { profilePicture } = request.body;
+    const userData = request.body;
     const userId = request.user.uid;
-    await userModel.updateProfilePicture(userId, profilePicture);
-    reply.send({ message: "Foto de perfil actualizada" });
+    await userModel.editUser(userId, userData);
+    reply.send({ message: "Usuario actualizado" });
   } catch (error) {
     request.log.error(error);
-    reply.status(500).send({ error: "Error al actualizar la foto de perfil" });
+    reply.status(500).send({ error: "Error al actualizar el usuario" });
   }
-};
+}

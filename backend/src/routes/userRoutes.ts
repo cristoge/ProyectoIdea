@@ -24,4 +24,10 @@ export const userRoutes = async (app: FastifyInstance) => {
   );
 
   app.delete("/users/:userId", userController.deleteUser);
+
+  app.patch<{ Body: Partial<User> }>(
+    "/users/:userId",
+    { preHandler: authMiddleware },
+    userController.editUser
+  );
 };

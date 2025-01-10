@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 
 export const UserProfile = () => {
   const [loading, setLoading] = useState(false); 
-  const [userData, setUserData] = useState(null); 
+  const [userData, setUserData] = useState<any>(null); 
   const [currentUser, setCurrentUser] = useState<User | null>(null); 
 
   useEffect(() => {
@@ -63,13 +63,20 @@ export const UserProfile = () => {
         <p>Loading...</p>
       ) : userData ? (
         <div>
-          <h3>User Data:</h3>
-          <pre>{JSON.stringify(userData, null, 2)}</pre>
+          <h3>Username: {userData.username}</h3>
+          {userData.profilePicture ? (
+            <img
+              src={userData.profilePicture}
+              alt={`${userData.username}'s profile`}
+              style={{ width: "150px", height: "150px", borderRadius: "50%" }}
+            />
+          ) : (
+            <p>No profile picture available.</p>
+          )}
         </div>
       ) : (
         <p>No user data available.</p>
       )}
-      <p>Check the console for user data.</p>
     </div>
   );
 };

@@ -10,19 +10,11 @@ export interface Project {
   likeCounts:      number;
   likedBy:          User['userId'][];
   comments?:        Comment[];
-  gitHubRepository?: GitHubRepository;
 }
-
-export interface GitHubRepository {
-  repoId:   string;
-  repoName: string;
-  repoUrl:  string;
-}
-
 
 export interface Comment {
-  commentId:    string;           
+  commentId:       string;
   userId:       User['userId'];   
-  text:         string;           
+  content:         string;           
   creationDate: Date;             
 }

@@ -56,6 +56,7 @@ export const addUserWithGithub = async (userData: {
       username: displayName || "",
       email: email || userRecord.email || "",
       profilePicture: userRecord.photoURL || null,
+      description: "",
       role: "Normal",
     };
 
@@ -79,41 +80,44 @@ export const addUserWithGithub = async (userData: {
 };
 
 export const addUserWithEmail = async (userData: User): Promise<void> => {
-  //Falta añadir la validacion de datos
   try {
+    // Validación de datos
     if (!userData.username || !userData.email || !userData.password) {
-      throw new Error("Faltan datos obligatorios");
+      throw new Error("Faltan datos obligatorios: username, email y password son necesarios.");
     }
+
     const { username, email, password, role } = userData;
-    // Creacion de usuarios con autenticacion de firebase
+
+    // Creación de usuario con autenticación de Firebase
     const userRecord = await adminAuth().createUser({
       email,
       password,
       displayName: username,
     });
+
+    // Creación de la estructura del nuevo usuario
     const newUser: User = {
-      userId: userRecord.uid,
+      userId: userRecord.uid, // Asignar el UID del usuario creado
       username,
       email,
-      password,
-      profilePicture: null,
-      githubId: null,
-      githubToken: null,
-      role: role || "Normal",
+      password, // Considera no almacenar la contraseña en texto plano
+      profilePicture: null, // Valor inicial si no se proporciona
+      role: role || "Normal", // Rol por defecto si no se especifica
+      description: "", // Descripción inicial vacía
     };
 
-    //guarda el usuario en la base de datos
-    await db
-      .collection("user")
-      .doc(userRecord.uid || "defaultId")
-      .set(newUser);
+    // Guardar el nuevo usuario en Firestore
+    await db.collection("user").doc(userRecord.uid).set(newUser);
 
     console.log("Usuario registrado y datos guardados en Firestore");
   } catch (error) {
     console.error("Error al agregar el usuario:", error);
-    throw new Error();
+
+    // Lanzar un error con más contexto
+    throw new Error(`Error al crear el usuario: ${(error as Error).message}`);
   }
 };
+
 
 export const deleteUser = async (userId: string): Promise<void> => {
   await db.collection("user").doc(userId).delete();
@@ -152,7 +156,9 @@ export const updateProfilePicture = async (
   }
 };
 
-export const getUserByIdParams = async (userId: string): Promise<{ username: string }> => {
+export const getUserByIdParams = async (
+  userId: string
+): Promise<{ username: string }> => {
   try {
     const userDoc = await db.collection("user").doc(userId).get();
     if (!userDoc.exists) {
@@ -171,3 +177,19 @@ export const getUserByIdParams = async (userId: string): Promise<{ username: str
   }
 };
 
+//aun no testado
+export const editUser = async (
+  userId: string,
+  userData: Partial<User>
+): Promise<void> => {
+  try {
+    const userRef = db.collection("user").doc(userId);
+    const updateData: any = {};
+    if (userData.profilePicture) updateData.profilePicture = userData.profilePicture;
+    if (userData.description) updateData.description = userData.description;
+    await userRef.update(updateData);
+  } catch (error) {
+    console.error("Error al editar el usuario:", error);
+    throw new Error("Error al editar el usuario");
+  }
+};

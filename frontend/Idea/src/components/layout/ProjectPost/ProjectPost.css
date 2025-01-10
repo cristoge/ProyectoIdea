@@ -1,0 +1,172 @@
+.project-post {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  position: relative; /* Asegura que el enlace pueda posicionarse de forma absoluta */
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.project-link {
+  font-size: 1rem;
+  color: #0077b6;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.project-link:hover {
+  text-decoration: underline;
+}
+
+.tags-info {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.project-post h1 {
+  font-size: 2.5rem;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.project-post p {
+  font-size: 1rem;
+  color: #555;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.project-post img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.project-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.creator-info, .like-info {
+  font-size: 0.9rem;
+  color: #777;
+}
+
+.like-button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.like-button:hover {
+  transform: scale(1.1);
+}
+
+.comments-section {
+  margin-top: 2rem;
+}
+
+.comments-section h2 {
+  font-size: 1.8rem;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.comment {
+  background-color: #f8f8f8;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.comment-user {
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.comment-content {
+  color: #555;
+}
+
+.comment-form {
+  margin-top: 2rem;
+}
+
+.comment-form h2 {
+  font-size: 1.5rem;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.comment-form textarea {
+  width: 100%;
+  padding: 0.75rem 0px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  resize: vertical;
+}
+
+.comment-form button {
+  background-color: #0077b6;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.comment-form button:hover {
+  background-color: #023e8a;
+}
+
+.loading, .not-found {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #777;
+  margin-top: 2rem;
+}
+
+@media (max-width: 768px) {
+  .project-post {
+    padding: 1rem;
+  }
+
+  .project-post h1 {
+    font-size: 2rem;
+  }
+
+  .project-info {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .like-info {
+    margin-top: 1rem;
+  }
+}
+.git-icon {
+  width: 30px;
+  height: 30px;
+  transition: transform 0.3s;
+}
+
+.project-link:hover .git-icon {
+  transform: scale(1.1);
+}

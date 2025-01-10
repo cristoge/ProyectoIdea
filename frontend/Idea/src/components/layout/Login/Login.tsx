@@ -2,11 +2,12 @@ import { getAuth, GithubAuthProvider, signInWithPopup, signInWithEmailAndPasswor
 import { app } from "../../../../firebaseConfig";
 import { useState } from "react";
 import './Login.css'; 
-
+import { useNavigate } from "react-router-dom";
 export const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   // Función de login con email y contraseña
   const loginWithEmail = async (email: string, password: string) => {
@@ -15,7 +16,7 @@ export const Login = () => {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const token = await userCredential.user.getIdToken();
       console.log("ID Token:", token);
-      
+      localStorage.setItem("authToken", token);
       const response = await fetch("http://localhost:3000/login", {
         method: "POST",
         headers: {
@@ -52,6 +53,7 @@ export const Login = () => {
         const idToken = await user.getIdToken();
         const credential = GithubAuthProvider.credentialFromResult(response);
         const githubToken = credential ? credential.accessToken : null;
+        localStorage.setItem("authToken", idToken);
         console.log("GithubToken:", githubToken);
         console.log("ID Token:", idToken);
 
@@ -83,11 +85,13 @@ export const Login = () => {
 
   return (
     <div className="auth-container">
-      <h2>Iniciar sesión</h2>
       <form className="login-form" onSubmit={(e) => {
         e.preventDefault();
         loginWithEmail(email, password);
       }}>
+        <h2>Iniciar sesión</h2>
+        <p style={{ color: 'black' }}>No tienes cuenta? <span className="register-link" onClick={() => navigate("/create-account")}>Créala aquí</span></p> 
+      {}
         <div className="input-group">
           <label>Email:</label>
           <input 
@@ -109,15 +113,14 @@ export const Login = () => {
           />
         </div>
         <button type="submit" className="login-button">Iniciar sesión</button>
+      <button onClick={loginWithGitHub} className="login-button">
+        Iniciar sesión con GitHub
+      </button>
       </form>
 
       {error && <p className="error-message">{error}</p>}
 
-      <h3>O</h3>
 
-      <button onClick={loginWithGitHub} className="github-button">
-        Iniciar sesión con GitHub
-      </button>
     </div>
   );
 };
