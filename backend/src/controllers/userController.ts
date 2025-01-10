@@ -132,3 +132,18 @@ export const loginUser = async (
     reply.status(401).send({ error: "Invalid or expired token" });
   }
 };
+
+export const editUser = async (
+  request: FastifyRequest<{ Body: Partial<User> }>,
+  reply: FastifyReply
+) => {
+  try {
+    const userData = request.body;
+    const userId = request.user.uid;
+    await userModel.editUser(userId, userData);
+    reply.send({ message: "Usuario actualizado" });
+  } catch (error) {
+    request.log.error(error);
+    reply.status(500).send({ error: "Error al actualizar el usuario" });
+  }
+}

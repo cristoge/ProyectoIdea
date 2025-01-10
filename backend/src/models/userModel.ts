@@ -56,6 +56,7 @@ export const addUserWithGithub = async (userData: {
       username: displayName || "",
       email: email || userRecord.email || "",
       profilePicture: userRecord.photoURL || null,
+      description: "",
       role: "Normal",
     };
 
@@ -98,6 +99,7 @@ export const addUserWithEmail = async (userData: User): Promise<void> => {
       password,
       profilePicture: null,
       role: role || "Normal",
+      description: "",
     };
 
     //guarda el usuario en la base de datos
@@ -150,7 +152,9 @@ export const updateProfilePicture = async (
   }
 };
 
-export const getUserByIdParams = async (userId: string): Promise<{ username: string }> => {
+export const getUserByIdParams = async (
+  userId: string
+): Promise<{ username: string }> => {
   try {
     const userDoc = await db.collection("user").doc(userId).get();
     if (!userDoc.exists) {
@@ -169,3 +173,19 @@ export const getUserByIdParams = async (userId: string): Promise<{ username: str
   }
 };
 
+//aun no testado
+export const editUser = async (
+  userId: string,
+  userData: Partial<User>
+): Promise<void> => {
+  try {
+    const userRef = db.collection("user").doc(userId);
+    const updateData: any = {};
+    if (userData.profilePicture) updateData.profilePicture = userData.profilePicture;
+    if (userData.description) updateData.description = userData.description;
+    await userRef.update(updateData);
+  } catch (error) {
+    console.error("Error al editar el usuario:", error);
+    throw new Error("Error al editar el usuario");
+  }
+};

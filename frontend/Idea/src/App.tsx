@@ -1,6 +1,6 @@
 import './App.css';
 import {Header} from './components/common';
-import { HomePage,ProjectPost,Login,CreateProject,UserProfile} from './components/layout';
+import { HomePage,ProjectPost,Login,CreateProject,UserProfile,RankingPage} from './components/layout';
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 function App() {
   return (
@@ -13,6 +13,8 @@ function App() {
           <Route path="/project/:id" element={<ProjectPost />} />
           <Route path="/profile" element={<UserProfile />} />
           <Route path="/create-project" element={<CreateProject />} />
+          <Route path="*" element={<h1>Not Found</h1>} />
+          <Route path="/ranking" element={<RankingPage />} />
         </Routes>
       </div>
     </Router>

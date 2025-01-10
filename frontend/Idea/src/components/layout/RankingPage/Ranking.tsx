@@ -1,16 +1,14 @@
-// HomePage.tsx
 import { useEffect, useState } from "react";
 import { Card } from "../../common";
-import "./HomePage.css";
-
-export const HomePage = () => {
+import "./Ranking.css";
+export const RankingPage = () => {
   interface DataItem {
     title: string;
     description: string;
     imageVideoUrl: string;
     creationDate: string;
     creatorId: string;
-    likedCount: number;
+    likeCounts: number;
     projectId: string;
     creatorName?: string; 
   }
@@ -53,17 +51,22 @@ export const HomePage = () => {
       }
     };
     fetchData();
+    console.log(filteredData);
+
   }, []);
 
-  const filteredData = data.filter(item => 
-    item.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    (item.creatorName && item.creatorName.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+  // Filtrar y ordenar los datos basados en el término de búsqueda y los likes
+  const filteredData = data
+    .filter(item => 
+      item.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      (item.creatorName && item.creatorName.toLowerCase().includes(searchTerm.toLowerCase()))
+    )
+    .sort((a, b) => b.likeCounts - a.likeCounts); // Ordenar por likes de mayor a menor
 
   return (
     <>
       <div className="header-container">
-        <h1 className="page-title">Proyectos</h1>
+        <h1 className="page-title">Ranking</h1>
         <input 
           type="text" 
           placeholder="Buscar..." 
@@ -84,6 +87,7 @@ export const HomePage = () => {
               image={item.imageVideoUrl}
               date={item.creationDate}
               author={item.creatorName || "Unknown"} 
+              
             />
           ))
         ) : (

@@ -20,7 +20,7 @@ export const Header = () => {
           </li>
         </ul>
         <div className="right-section">
-          <input type="text" className="search-bar" placeholder="Buscar..." />
+          
             <div className="avatar">
             <Link to="/profile">
               <img src="/icon.svg" alt="Avatar" />

@@ -5,6 +5,7 @@ export interface User {
   password?:        string;
   profilePicture?: string | null;
   role:            string;
+  description:    string;
 }
 
 export interface githubData {
