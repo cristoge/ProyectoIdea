@@ -2,11 +2,12 @@ import { getAuth, GithubAuthProvider, signInWithPopup, signInWithEmailAndPasswor
 import { app } from "../../../../firebaseConfig";
 import { useState } from "react";
 import './Login.css'; 
-
+import { useNavigate } from "react-router-dom";
 export const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   // Función de login con email y contraseña
   const loginWithEmail = async (email: string, password: string) => {
@@ -89,6 +90,8 @@ export const Login = () => {
         loginWithEmail(email, password);
       }}>
         <h2>Iniciar sesión</h2>
+        <p style={{ color: 'black' }}>No tienes cuenta? <span className="register-link" onClick={() => navigate("/create-account")}>Créala aquí</span></p> 
+      {}
         <div className="input-group">
           <label>Email:</label>
           <input 

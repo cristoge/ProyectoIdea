@@ -86,14 +86,26 @@ export const addUserWithEmail = async (
   reply: FastifyReply
 ): Promise<void> => {
   try {
-    //devuelve el id pero ahora mismo no lo estoy usando
-    const docRef = await userModel.addUserWithEmail(request.body);
-    reply.send({ message: "Usuario agregado" });
+    const { email, password, username, role } = request.body;
+
+    // Validación de campos obligatorios
+    if (!email || !password || !username) {
+      return reply.status(400).send({ error: "Faltan datos obligatorios" });
+    }
+
+    // Añade el usuario utilizando el método en el modelo (presumiblemente interactuando con Firestore o Firebase Auth)
+    const docRef = await userModel.addUserWithEmail({ email, password, username, role, userId: "", description: "" });
+
+    // Respuesta exitosa
+    reply.send({ message: "Usuario agregado correctamente"});
   } catch (error) {
     request.log.error(error);
+
+    // Respuesta de error
     reply.status(500).send({ error: "Error al agregar el usuario" });
   }
 };
+
 
 
 //No aplicado aun

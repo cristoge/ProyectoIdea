@@ -61,3 +61,7 @@ h2 {
   color: red;
   margin-top: 10px;
 }
+.register-link{
+  color: blue;
+  cursor: pointer;
+}
