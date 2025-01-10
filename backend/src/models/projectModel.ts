@@ -129,24 +129,55 @@ export const likeProject = async (
   try {
     const projectRef = db.collection("project").doc(projectId);
     const projectDoc = await projectRef.get();
+
     if (!projectDoc.exists) {
       throw new Error("Proyecto no encontrado");
     }
+
     const project = projectDoc.data();
     if (!project) {
       throw new Error("Proyecto no encontrado");
     }
+
     if (project.likedBy.includes(userId)) {
       throw new Error("Ya has dado like a este proyecto");
     }
+
+    // Actualizar el proyecto con el like
     await projectRef.update({
       likeCounts: project.likeCounts + 1,
       likedBy: [...project.likedBy, userId],
     });
-    console.log("Proyecto actualizado correctamente");
+
+    // Ahora actualizamos los favoritos del usuario
+    const userRef = db.collection("user").doc(userId);
+    const userDoc = await userRef.get();
+
+    if (!userDoc.exists) {
+      throw new Error("Usuario no encontrado");
+    }
+
+    const user = userDoc.data();
+    if (!user) {
+      throw new Error("Datos de usuario inválidos");
+    }
+
+    // Si el usuario no tiene una lista de favoritos, la inicializamos como un array vacío
+    const updatedFavorites = Array.isArray(user.favorites) ? user.favorites : [];
+    
+    if (updatedFavorites.includes(projectId)) {
+      throw new Error("Este proyecto ya está en tus favoritos");
+    }
+
+    // Actualizar los favoritos del usuario
+    await userRef.update({
+      favorites: [...updatedFavorites, projectId],
+    });
+
+    console.log("Proyecto actualizado y agregado a los favoritos correctamente");
   } catch (error) {
-    console.error("Error al actualizar el proyecto:", error);
-    throw new Error("No se pudo actualizar el proyecto");
+    console.error("Error al actualizar el proyecto y los favoritos del usuario:", error);
+    throw new Error("No se pudo actualizar el proyecto y los favoritos");
   }
 };
 

@@ -152,9 +152,27 @@ export const ProjectPost = () => {
 
   return (
     <div className="project-post">
-      <h1>{post.title}</h1>
+      <div className="header">
+        <h1>{post.title}</h1>
+        {post.link && (
+          <a
+            href={post.link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="project-link"
+          >
+            <img
+              src="/github-mark.svg"
+              alt="Ver Proyecto"
+              className="git-icon"
+            />
+          </a>
+        )}
+      </div>
+
       <img src={post.imageVideoUrl} alt={post.title} />
       <p>{post.description}</p>
+
       <div className="tags-info">
         {post.tags.map((tag: string, index: number) => (
           <p key={index} className="tag">
@@ -162,6 +180,7 @@ export const ProjectPost = () => {
           </p>
         ))}
       </div>
+
       <div className="project-info">
         <p className="creator-info">Creado por: {creatorName}</p>
         <div className="like-info">

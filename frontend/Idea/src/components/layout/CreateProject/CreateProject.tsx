@@ -13,6 +13,7 @@ export const CreateProject = () => {
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [tags, setTags] = useState<string[]>([])
   const [newTag, setNewTag] = useState("")
+  const [projectLink, setProjectLink] = useState("")  // Nuevo estado para el enlace
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -72,6 +73,7 @@ export const CreateProject = () => {
         description: projectDescription,
         imageVideoUrl,
         tags,
+        link: projectLink,  // Incluir el link en los datos del proyecto
       }
 
       const response = await fetch("http://localhost:3000/projects", {
@@ -132,6 +134,16 @@ export const CreateProject = () => {
         {imageFile && <p className="file-name">{imageFile.name}</p>}
       </div>
       <div className="form-group">
+        <label htmlFor="projectLink">Enlace del Proyecto</label>
+        <input
+          id="projectLink"
+          type="url"
+          placeholder="Ingrese el enlace"
+          value={projectLink}
+          onChange={(e) => setProjectLink(e.target.value)}
+        />
+      </div>
+      <div className="form-group">
         <label htmlFor="projectTags">Etiquetas del Proyecto</label>
         <div className="tag-input">
           <input
@@ -163,5 +175,3 @@ export const CreateProject = () => {
     </div>
   )
 }
-
-

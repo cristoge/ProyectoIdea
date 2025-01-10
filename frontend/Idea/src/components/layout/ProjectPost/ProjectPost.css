@@ -5,11 +5,30 @@
   background-color: #ffffff;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  position: relative; /* Asegura que el enlace pueda posicionarse de forma absoluta */
 }
-.tags-info{
+
+.header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.project-link {
+  font-size: 1rem;
+  color: #0077b6;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.project-link:hover {
+  text-decoration: underline;
+}
+
+.tags-info {
   display: flex;
   gap: 0.5rem;
 }
+
 .project-post h1 {
   font-size: 2.5rem;
   color: #333;
@@ -142,4 +161,12 @@
     margin-top: 1rem;
   }
 }
+.git-icon {
+  width: 30px;
+  height: 30px;
+  transition: transform 0.3s;
+}
 
+.project-link:hover .git-icon {
+  transform: scale(1.1);
+}
