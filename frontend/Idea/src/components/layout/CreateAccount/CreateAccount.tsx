@@ -46,7 +46,7 @@ export const CreateAccount = () => {
         e.preventDefault();
         registerWithEmail(email, password, username); // Pasa el nombre de usuario
       }}>
-        <h2>Crear Cuenta</h2>
+        <h2 style={{ textAlign: 'center', color: '#333', marginBottom: '1.5rem' }}>Crear Cuenta</h2>
         <div className="input-group">
           <label>Nombre de Usuario:</label> {/* Nuevo campo */}
           <input 

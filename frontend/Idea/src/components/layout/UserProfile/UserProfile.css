@@ -1,0 +1,94 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+.loading, .noData {
+  text-align: center;
+  color: #666;
+}
+
+
+.userInfo {
+  display: flex;
+  align-items: center;
+}
+
+.profilePicture {
+  width: 6rem;
+  height: 6rem;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 1rem;
+}
+
+.profilePicturePlaceholder {
+  width: 6rem;
+  height: 6rem;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 1rem;
+}
+
+.profilePicturePlaceholder span {
+  font-size: 2rem;
+  color: #666;
+}
+
+.username {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.userDescription {
+  color: #666;
+}
+
+.projectsTitle {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.projects {
+  display: flex;
+  gap: 1rem; /* Espacio entre las cards */
+  justify-content: flex-start; /* Alineación a la izquierda */
+  overflow-x: auto; /* Permite desplazamiento horizontal */
+  padding-bottom: 1rem; /* Espacio inferior opcional para que el contenido no quede pegado */
+  -webkit-overflow-scrolling: touch; /* Mejora el desplazamiento en dispositivos móviles */
+}
+
+.projects > article {
+  flex: 0 0 auto; /* Evita que las cards se estiren o encojan */
+  min-width: 250px; /* Tamaño mínimo */
+  max-width: 250px; /* Tamaño máximo */
+  box-sizing: border-box; /* Asegura que el padding no afecte el tamaño */
+}
+
+@media (max-width: 768px) {
+  .userInfo {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .profilePicture,
+  .profilePicturePlaceholder {
+    margin-right: 0;
+    margin-bottom: 1rem;
+  }
+}

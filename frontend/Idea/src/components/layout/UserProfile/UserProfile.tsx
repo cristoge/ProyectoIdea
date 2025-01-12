@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../../auth/AuthContext';
 import { Card } from "../../common";
-
+import './UserProfile.css';
 interface ProjectItem {
   title: string;
   description: string;
@@ -84,34 +84,41 @@ export const UserProfile = () => {
   }, [currentUser]);
 
   return (
-    <div>
-      <h2>User Profile</h2>
+    <div className='container'>
+      <h2 className='title'>User Profile</h2>
       {loading ? (
-        <p>Loading...</p>
+        <p className='loading'>Loading...</p>
       ) : (
         <>
           {userData ? (
-            <div>
-              <h3>Username: {userData.username}</h3>
-              {userData.profilePicture ? (
-                <img
-                  src={userData.profilePicture}
-                  alt={`${userData.username}'s profile`}
-                  style={{ width: "150px", height: "150px", borderRadius: "50%" }}
-                />
-              ) : (
-                <p>No profile picture available.</p>
-              )}
+            <div className='userCard'>
+              <div className='userInfo'>
+                {userData.profilePicture ? (
+                  <img
+                    className='profilePicture'
+                    src={userData.profilePicture}
+                    alt={`${userData.username}'s profile`}
+                  />
+                ) : (
+                  <div className='profilePicturePlaceholder'>
+                    <span>No Image</span>
+                  </div>
+                )}
+                <div>
+                  <h3 className='username'>{userData.username}</h3>
+                  <p className='userDescription'>{userData.description}</p>
+                </div>
+              </div>
             </div>
           ) : (
-            <p>No user data available.</p>
+            <p className='noData'>No user data available.</p>
           )}
-
-          {/* Mostrar los proyectos del usuario */}
+  
+         
           <div>
-            <h3>Mis Proyectos</h3>
+            <h3 className='projectsTitle'>Mis Proyectos</h3>
             {userProjects.length > 0 ? (
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
+              <div className='projects'>
                 {userProjects.map((project) => (
                   <Card
                     key={project.projectId}
@@ -125,7 +132,7 @@ export const UserProfile = () => {
                 ))}
               </div>
             ) : (
-              <p>No projects available.</p>
+              <p className='noData'>No projects available.</p>
             )}
           </div>
         </>
