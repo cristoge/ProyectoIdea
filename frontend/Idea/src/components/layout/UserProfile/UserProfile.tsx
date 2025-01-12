@@ -1,29 +1,28 @@
-import { getAuth, User } from 'firebase/auth';
-import { app } from '../../../../firebaseConfig'; 
 import { useState, useEffect } from 'react';
+import { useAuth } from '../../../auth/AuthContext';
+import { Card } from "../../common";
+
+interface ProjectItem {
+  title: string;
+  description: string;
+  imageVideoUrl: string;
+  creationDate: string;
+  creatorId: string;
+  likedCount: number;
+  projectId: string;
+  creatorName?: string; 
+}
 
 export const UserProfile = () => {
+  const { currentUser } = useAuth(); // Obtener el usuario desde el AuthContext
   const [loading, setLoading] = useState(false); 
   const [userData, setUserData] = useState<any>(null); 
-  const [currentUser, setCurrentUser] = useState<User | null>(null); 
+  const [userProjects, setUserProjects] = useState<ProjectItem[]>([]); // Estado para almacenar los proyectos del usuario
 
-  useEffect(() => {
-    const auth = getAuth(app);
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        setCurrentUser(user);
-      } else {
-        setCurrentUser(null);
-        console.error("No user is authenticated.");
-      }
-    });
-
-    return () => unsubscribe();
-  }, []);
-
+  // Obtener los datos del usuario
   useEffect(() => {
     const fetchUserData = async () => {
-      if (!currentUser) return; // Si no hay usuario autenticado, no continuar
+      if (!currentUser) return;
 
       try {
         setLoading(true);
@@ -52,30 +51,84 @@ export const UserProfile = () => {
     };
 
     if (currentUser) {
-      fetchUserData(); // Llamada automática cuando el usuario está autenticado
+      fetchUserData();
     }
-  }, [currentUser]); // Se ejecuta cuando `currentUser` cambia
+  }, [currentUser]);
+
+  // Obtener los proyectos del usuario autenticado
+  useEffect(() => {
+    const fetchUserProjects = async () => {
+      if (!currentUser) return;
+
+      try {
+        setLoading(true);
+        const response = await fetch("http://localhost:3000/projects");
+        if (!response.ok) {
+          throw new Error("Error fetching projects.");
+        }
+
+        const result: ProjectItem[] = await response.json();
+        const userProjectData = result.filter(project => project.creatorId === currentUser.uid);
+
+        setUserProjects(userProjectData); // Guardar los proyectos del usuario en el estado
+      } catch (error) {
+        console.error("Error fetching user projects:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (currentUser) {
+      fetchUserProjects();
+    }
+  }, [currentUser]);
 
   return (
     <div>
       <h2>User Profile</h2>
       {loading ? (
         <p>Loading...</p>
-      ) : userData ? (
-        <div>
-          <h3>Username: {userData.username}</h3>
-          {userData.profilePicture ? (
-            <img
-              src={userData.profilePicture}
-              alt={`${userData.username}'s profile`}
-              style={{ width: "150px", height: "150px", borderRadius: "50%" }}
-            />
-          ) : (
-            <p>No profile picture available.</p>
-          )}
-        </div>
       ) : (
-        <p>No user data available.</p>
+        <>
+          {userData ? (
+            <div>
+              <h3>Username: {userData.username}</h3>
+              {userData.profilePicture ? (
+                <img
+                  src={userData.profilePicture}
+                  alt={`${userData.username}'s profile`}
+                  style={{ width: "150px", height: "150px", borderRadius: "50%" }}
+                />
+              ) : (
+                <p>No profile picture available.</p>
+              )}
+            </div>
+          ) : (
+            <p>No user data available.</p>
+          )}
+
+          {/* Mostrar los proyectos del usuario */}
+          <div>
+            <h3>Mis Proyectos</h3>
+            {userProjects.length > 0 ? (
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
+                {userProjects.map((project) => (
+                  <Card
+                    key={project.projectId}
+                    projectId={project.projectId}
+                    title={project.title}
+                    description={project.description}
+                    image={project.imageVideoUrl}
+                    author={project.creatorName || ''}
+                    date={project.creationDate}
+                  />
+                ))}
+              </div>
+            ) : (
+              <p>No projects available.</p>
+            )}
+          </div>
+        </>
       )}
     </div>
   );

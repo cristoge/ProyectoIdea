@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { useAuth } from "../../../auth/AuthContext"; 
 import "./ProjectPost.css";
 
 export const ProjectPost = () => {
@@ -9,6 +10,9 @@ export const ProjectPost = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [comments, setComments] = useState<any[]>([]);
   const [newComment, setNewComment] = useState<string>("");
+
+  // Acceder al usuario autenticado desde el AuthContext
+  const { currentUser } = useAuth();
 
   useEffect(() => {
     const fetchPostData = async () => {
@@ -87,14 +91,20 @@ export const ProjectPost = () => {
 
     if (!newComment.trim()) return;
 
+    if (!currentUser) {
+      alert("Por favor inicia sesión para comentar.");
+      return;
+    }
+
     try {
+      const idToken = await currentUser.getIdToken(); // Obtener el token del usuario autenticado
       const response = await fetch(
         `http://localhost:3000/projects/${id}/comments`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+            Authorization: `Bearer ${idToken}`,
           },
           body: JSON.stringify({
             comment: newComment,
@@ -115,14 +125,20 @@ export const ProjectPost = () => {
   };
 
   const handleLike = async () => {
+    if (!currentUser) {
+      alert("Por favor inicia sesión para dar like.");
+      return;
+    }
+
     try {
+      const idToken = await currentUser.getIdToken(); // Obtener el token del usuario autenticado
       const response = await fetch(
         `http://localhost:3000/projects/${id}/like`,
         {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+            Authorization: `Bearer ${idToken}`,
           },
           body: JSON.stringify({}),
         }

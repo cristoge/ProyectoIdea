@@ -1,15 +1,25 @@
+import { useState, useEffect } from 'react';
+import { useAuth } from '../../../auth/AuthContext'; 
 import { getAuth, GithubAuthProvider, signInWithPopup, signInWithEmailAndPassword } from "firebase/auth";
 import { app } from "../../../../firebaseConfig";
-import { useState } from "react";
-import './Login.css'; 
 import { useNavigate } from "react-router-dom";
+import './Login.css';
+
 export const Login = () => {
+  const { currentUser } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  // Función de login con email y contraseña
+  // Redirigir si el usuario ya está autenticado
+  useEffect(() => {
+    if (currentUser) {
+      navigate('/profile'); 
+    }
+  }, [currentUser, navigate]); // Dependencia en currentUser para que solo se ejecute cuando cambie
+
+
   const loginWithEmail = async (email: string, password: string) => {
     try {
       const auth = getAuth(app);
@@ -91,7 +101,6 @@ export const Login = () => {
       }}>
         <h2>Iniciar sesión</h2>
         <p style={{ color: 'black' }}>No tienes cuenta? <span className="register-link" onClick={() => navigate("/create-account")}>Créala aquí</span></p> 
-      {}
         <div className="input-group">
           <label>Email:</label>
           <input 
@@ -113,14 +122,12 @@ export const Login = () => {
           />
         </div>
         <button type="submit" className="login-button">Iniciar sesión</button>
-      <button onClick={loginWithGitHub} className="login-button">
-        Iniciar sesión con GitHub
-      </button>
+        <button type="button" onClick={loginWithGitHub} className="login-button">
+          Iniciar sesión con GitHub
+        </button>
       </form>
 
       {error && <p className="error-message">{error}</p>}
-
-
     </div>
   );
 };

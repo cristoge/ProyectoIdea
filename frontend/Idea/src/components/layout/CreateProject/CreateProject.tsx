@@ -1,12 +1,14 @@
+// CreateProject.tsx
 'use client'
 
 import { useState, ChangeEvent } from 'react'
-import { getAuth } from "firebase/auth"
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage"
 import { app } from "../../../../firebaseConfig"
+import { useAuth } from '../../../auth/AuthContext'// Importamos el hook useAuth
 import './CreateProject.css'
 
 export const CreateProject = () => {
+  const { currentUser } = useAuth(); // Obtenemos el usuario autenticado del contexto
   const [loading, setLoading] = useState(false)
   const [projectTitle, setProjectTitle] = useState("")
   const [projectDescription, setProjectDescription] = useState("")
@@ -53,8 +55,6 @@ export const CreateProject = () => {
   const createProject = async () => {
     try {
       setLoading(true)
-      const auth = getAuth(app)
-      const currentUser = auth.currentUser
 
       if (!currentUser) {
         console.error("No user is authenticated.")
