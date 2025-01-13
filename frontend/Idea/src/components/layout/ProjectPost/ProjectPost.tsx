@@ -189,13 +189,15 @@ export const ProjectPost = () => {
       <img src={post.imageVideoUrl} alt={post.title} />
       <p>{post.description}</p>
 
-      <div className="tags-info">
-        {post.tags.map((tag: string, index: number) => (
-          <p key={index} className="tag">
-            {tag}
-          </p>
-        ))}
-      </div>
+      {post.tags && post.tags.length > 0 && (
+        <div className="tags-info">
+          {post.tags.map((tag: string, index: number) => (
+        <p key={index} className="tag">
+          {tag}
+        </p>
+          ))}
+        </div>
+      )}
 
       <div className="project-info">
         <p className="creator-info">Creado por: {creatorName}</p>

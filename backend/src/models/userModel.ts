@@ -97,13 +97,12 @@ export const addUserWithEmail = async (userData: User): Promise<void> => {
 
     // Creación de la estructura del nuevo usuario
     const newUser: User = {
-      userId: userRecord.uid, // Asignar el UID del usuario creado
+      userId: userRecord.uid, 
       username,
       email,
-      password, // Considera no almacenar la contraseña en texto plano
-      profilePicture: null, // Valor inicial si no se proporciona
-      role: role || "Normal", // Rol por defecto si no se especifica
-      description: "", // Descripción inicial vacía
+      profilePicture: null, 
+      role: role || "Normal", 
+      description: "", 
     };
 
     // Guardar el nuevo usuario en Firestore
