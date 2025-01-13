@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom'; // Para acceder a los parámetros de la ruta
 import { useAuth } from '../../../auth/AuthContext';
 import { Card } from "../../common";
 import './UserProfile.css';
+
 interface ProjectItem {
   title: string;
   description: string;
@@ -15,6 +17,7 @@ interface ProjectItem {
 
 export const UserProfile = () => {
   const { currentUser } = useAuth(); // Obtener el usuario desde el AuthContext
+  const { userId } = useParams<{ userId: string }>(); // Obtener el ID de usuario desde la ruta
   const [loading, setLoading] = useState(false); 
   const [userData, setUserData] = useState<any>(null); 
   const [userProjects, setUserProjects] = useState<ProjectItem[]>([]); // Estado para almacenar los proyectos del usuario
@@ -22,16 +25,14 @@ export const UserProfile = () => {
   // Obtener los datos del usuario
   useEffect(() => {
     const fetchUserData = async () => {
-      if (!currentUser) return;
+      if (!userId) return; // Si no hay un userId en la ruta, no hacer nada
 
       try {
         setLoading(true);
-        const token = await currentUser.getIdToken();
 
-        const response = await fetch("http://localhost:3000/userData", {
+        const response = await fetch(`http://localhost:3000/users/${userId}`, {
           method: "GET",
           headers: {
-            Authorization: `Bearer ${token}`, 
             'Content-Type': 'application/json',
           },
         });
@@ -50,15 +51,13 @@ export const UserProfile = () => {
       }
     };
 
-    if (currentUser) {
-      fetchUserData();
-    }
-  }, [currentUser]);
+    fetchUserData();
+  }, [userId]);
 
-  // Obtener los proyectos del usuario autenticado
+  // Obtener los proyectos del usuario
   useEffect(() => {
     const fetchUserProjects = async () => {
-      if (!currentUser) return;
+      if (!userId) return; // Asegúrate de tener un userId
 
       try {
         setLoading(true);
@@ -68,9 +67,9 @@ export const UserProfile = () => {
         }
 
         const result: ProjectItem[] = await response.json();
-        const userProjectData = result.filter(project => project.creatorId === currentUser.uid);
+        const userProjectData = result.filter(project => project.creatorId === userId); // Filtrar por el userId de la ruta
 
-        setUserProjects(userProjectData); // Guardar los proyectos del usuario en el estado
+        setUserProjects(userProjectData); 
       } catch (error) {
         console.error("Error fetching user projects:", error);
       } finally {
@@ -78,10 +77,8 @@ export const UserProfile = () => {
       }
     };
 
-    if (currentUser) {
-      fetchUserProjects();
-    }
-  }, [currentUser]);
+    fetchUserProjects();
+  }, [userId]);
 
   return (
     <div className='container'>
@@ -114,7 +111,6 @@ export const UserProfile = () => {
             <p className='noData'>No user data available.</p>
           )}
   
-         
           <div>
             <h3 className='projectsTitle'>Mis Proyectos</h3>
             {userProjects.length > 0 ? (

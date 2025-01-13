@@ -11,7 +11,7 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/project/:id" element={<ProjectPost />} />
-          <Route path="/profile" element={<UserProfile />} />
+          <Route path="/profile/:userId" element={<UserProfile />} />
           <Route path="/create-project" element={<CreateProject />} />
           <Route path="*" element={<h1>Not Found</h1>} />
           <Route path="/ranking" element={<RankingPage />} />

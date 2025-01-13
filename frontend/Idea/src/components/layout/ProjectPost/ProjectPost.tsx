@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useAuth } from "../../../auth/AuthContext"; 
@@ -13,6 +14,9 @@ export const ProjectPost = () => {
 
   // Acceder al usuario autenticado desde el AuthContext
   const { currentUser } = useAuth();
+
+  // Inicializar useNavigate
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchPostData = async () => {
@@ -158,6 +162,10 @@ export const ProjectPost = () => {
     }
   };
 
+  const goToCreatorProfile = () => {
+    navigate(`/profile/${post.creatorId}`);
+  };
+
   if (loading) {
     return <div className="loading">Loading...</div>;
   }
@@ -192,15 +200,24 @@ export const ProjectPost = () => {
       {post.tags && post.tags.length > 0 && (
         <div className="tags-info">
           {post.tags.map((tag: string, index: number) => (
-        <p key={index} className="tag">
-          {tag}
-        </p>
+            <p key={index} className="tag">
+              {tag}
+            </p>
           ))}
         </div>
       )}
 
       <div className="project-info">
-        <p className="creator-info">Creado por: {creatorName}</p>
+        <p className="creator-info">
+          Creado por:{" "}
+          <span
+            className="creator-link"
+            onClick={goToCreatorProfile}
+            style={{ cursor: "pointer", color: "#0277B6" }}
+          >
+            {creatorName}
+          </span>
+        </p>
         <div className="like-info">
           <span>Likes: {post.likeCounts}</span>
           <button className="like-button" onClick={handleLike}>
