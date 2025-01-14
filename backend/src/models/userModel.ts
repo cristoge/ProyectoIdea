@@ -33,11 +33,11 @@ export const getUserById = async (userId: string) => {
 export const addUserWithGithub = async (userData: {
   idToken: string;
   githubToken: string;
-  displayName: string;
+  screenName: string;
   email: string;
 }): Promise<User> => {
   try {
-    const { idToken, displayName, githubToken, email } = userData;
+    const { idToken, screenName, githubToken, email } = userData;
 
     // Verificación del token
     const userRecord = await adminAuth().verifyIdToken(idToken);
@@ -53,7 +53,7 @@ export const addUserWithGithub = async (userData: {
 
     const newUser: User = {
       userId: userRecord.uid,
-      username: displayName || "",
+      username: screenName || "",
       email: email || userRecord.email || "",
       profilePicture: userRecord.photoURL || null,
       description: "",

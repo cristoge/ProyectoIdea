@@ -10,6 +10,7 @@ export const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [screenName, setScreenName] = useState<string | null>(null);  // Estado para guardar el screenName
   const navigate = useNavigate();
 
   // Redirigir si el usuario ya está autenticado
@@ -19,6 +20,11 @@ export const Login = () => {
     }
   }, [currentUser, navigate]); // Dependencia en currentUser para que solo se ejecute cuando cambie
 
+  useEffect(() => {
+    if (screenName) {
+      console.log('GitHub Screen Name:', screenName);
+    }
+  }, [screenName]);
 
   const loginWithEmail = async (email: string, password: string) => {
     try {
@@ -63,6 +69,29 @@ export const Login = () => {
         const idToken = await user.getIdToken();
         const credential = GithubAuthProvider.credentialFromResult(response);
         const githubToken = credential ? credential.accessToken : null;
+        
+        if (githubToken) {
+          // Usar el token de GitHub para hacer una solicitud a la API de GitHub y obtener el nombre de usuario
+          try {
+            const githubUserResponse = await fetch('https://api.github.com/user', {
+              headers: {
+                Authorization: `Bearer ${githubToken}`,
+              },
+            });
+
+            if (githubUserResponse.ok) {
+              const githubUserData = await githubUserResponse.json();
+              setScreenName(githubUserData.login);  // Aquí obtenemos el screenName (login de GitHub)
+              console.log('GitHub Screen Name:', githubUserData.login);
+              
+            } else {
+              console.error('Error al obtener los datos de GitHub');
+            }
+          } catch (error) {
+            console.error('Error al realizar la solicitud a GitHub API:', error);
+          }
+        }
+
         localStorage.setItem("authToken", idToken);
         console.log("GithubToken:", githubToken);
         console.log("ID Token:", idToken);
@@ -76,8 +105,12 @@ export const Login = () => {
             body: JSON.stringify({
               idToken,
               githubToken,
+              screenName,
             }),
+            
           });
+          
+          
           const data = await backendResponse.json();
           if (backendResponse.ok) {
             console.log("Usuario Autenticado con GitHub", data);
@@ -128,6 +161,7 @@ export const Login = () => {
       </form>
 
       {error && <p className="error-message">{error}</p>}
+      {screenName && <p className="screen-name">GitHub Screen Name: {screenName}</p>} {/* Mostrar el screenName */}
     </div>
   );
 };

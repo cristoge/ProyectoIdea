@@ -53,7 +53,7 @@ export const addUserWithGithub = async (
     Body: {
       idToken: string;
       githubToken: string;
-      displayName: string;
+      screenName: string;
       email: string;
     };
   }>,
@@ -61,13 +61,13 @@ export const addUserWithGithub = async (
 ): Promise<void> => {
   try {
     // § Obtiene los datos del cuerpo de la petición
-    const { idToken, githubToken, displayName, email } = request.body;
+    const { idToken, githubToken, screenName, email } = request.body;
     console.log("ID Token recibido:", idToken);
 
     const newUser: User = await userModel.addUserWithGithub({
       idToken,
       githubToken,
-      displayName,
+      screenName,
       email,
     });
 

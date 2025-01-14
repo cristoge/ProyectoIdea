@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom'; // Para acceder a los parámetros de la ruta
+import { useParams } from 'react-router-dom';
 import { useAuth } from '../../../auth/AuthContext';
 import { Card } from "../../common";
 import './UserProfile.css';
@@ -16,16 +16,15 @@ interface ProjectItem {
 }
 
 export const UserProfile = () => {
-  const { currentUser } = useAuth(); // Obtener el usuario desde el AuthContext
-  const { userId } = useParams<{ userId: string }>(); // Obtener el ID de usuario desde la ruta
+  const { currentUser } = useAuth(); 
+  const { userId } = useParams<{ userId: string }>(); 
   const [loading, setLoading] = useState(false); 
   const [userData, setUserData] = useState<any>(null); 
-  const [userProjects, setUserProjects] = useState<ProjectItem[]>([]); // Estado para almacenar los proyectos del usuario
+  const [userProjects, setUserProjects] = useState<ProjectItem[]>([]);
 
-  // Obtener los datos del usuario
   useEffect(() => {
     const fetchUserData = async () => {
-      if (!userId) return; // Si no hay un userId en la ruta, no hacer nada
+      if (!userId) return;
 
       try {
         setLoading(true);
@@ -41,6 +40,19 @@ export const UserProfile = () => {
 
         if (response.ok) {
           setUserData(data); 
+
+          // Obtener foto de perfil desde la API de GitHub si existe el username
+          if (data.username) {
+            const githubResponse = await fetch(`https://api.github.com/users/${data.username}`);
+            const githubData = await githubResponse.json();
+
+            if (githubData.avatar_url) {
+              setUserData((prevData: any) => ({
+                ...prevData,
+                profilePicture: githubData.avatar_url,
+              }));
+            }
+          }
         } else {
           console.error("Error fetching user data:", data.error); 
         }
@@ -54,10 +66,9 @@ export const UserProfile = () => {
     fetchUserData();
   }, [userId]);
 
-  // Obtener los proyectos del usuario
   useEffect(() => {
     const fetchUserProjects = async () => {
-      if (!userId) return; // Asegúrate de tener un userId
+      if (!userId) return;
 
       try {
         setLoading(true);
@@ -67,9 +78,9 @@ export const UserProfile = () => {
         }
 
         const result: ProjectItem[] = await response.json();
-        const userProjectData = result.filter(project => project.creatorId === userId); // Filtrar por el userId de la ruta
+        const userProjectData = result.filter(project => project.creatorId === userId);
 
-        setUserProjects(userProjectData); 
+        setUserProjects(userProjectData);
       } catch (error) {
         console.error("Error fetching user projects:", error);
       } finally {
