@@ -16,7 +16,25 @@ export const CreateProject = () => {
   const [githubRepos, setGithubRepos] = useState<any[]>([]);
   const [selectedRepo, setSelectedRepo] = useState("");
   const [userData, setUserData] = useState<any>(null);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
+
+  const availableCategories = [
+    "Frontend",
+    "Backend",
+    "Mobile",
+    "Data Science",
+    "DevOps",
+    "Machine Learning",
+    "Cybersecurity",
+    "Blockchain",
+    "Game Development",
+    "UI/UX",
+    "Artificial Intelligence",
+    "Virtual Reality",
+    "Database",
+  ];
+  
   useEffect(() => {
     const fetchUserData = async () => {
       if (!currentUser) return;
@@ -100,6 +118,13 @@ export const CreateProject = () => {
       );
     });
   };
+  const handleCategoryChange = (category: string) => {
+    if (selectedCategories.includes(category)) {
+      setSelectedCategories(selectedCategories.filter(cat => cat !== category));
+    } else {
+      setSelectedCategories([...selectedCategories, category]);
+    }
+  };
 
   const createProject = async () => {
     try {
@@ -124,6 +149,7 @@ export const CreateProject = () => {
         tags,
         link: projectLink,
         repository: selectedRepo, // Incluir el repositorio seleccionado
+        categories: selectedCategories,
       };
 
       const response = await fetch("http://localhost:3000/projects", {
@@ -193,6 +219,23 @@ export const CreateProject = () => {
         />
       </div>
       <div className="form-group">
+        <label>Categorías del Proyecto</label>
+        <div className="repos-list">
+          {availableCategories.map((category) => (
+            <div key={category}>
+              <input
+                type="checkbox"
+                id={`category-${category}`}
+                value={category}
+                checked={selectedCategories.includes(category)}
+                onChange={() => handleCategoryChange(category)}
+              />
+              <label htmlFor={`category-${category}`}>{category}</label>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="form-group">
         <label htmlFor="projectTags">Etiquetas del Proyecto</label>
         <div className="tag-input">
           <input
@@ -223,7 +266,7 @@ export const CreateProject = () => {
             githubRepos.map((repo) => (
               <div key={repo.id}>
                 <input
-                  type="checkbox"
+                  type="radio"
                   id={`repo-${repo.id}`}
                   value={repo.name}
                   checked={selectedRepo === repo.name}

@@ -6,11 +6,10 @@ export const CreateAccount = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [username, setUsername] = useState(''); // Nuevo estado para el nombre de usuario
+  const [username, setUsername] = useState(''); 
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  // Función para registrar con email, contraseña y nombre de usuario
   const registerWithEmail = async (email: string, password: string, username: string) => {
     if (password !== confirmPassword) {
       setError("Las contraseñas no coinciden.");
