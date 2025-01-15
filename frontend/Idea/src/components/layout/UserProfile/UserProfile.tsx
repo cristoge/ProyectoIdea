@@ -23,6 +23,7 @@ export const UserProfile = () => {
   const [userData, setUserData] = useState<any>(null); 
   const [userProjects, setUserProjects] = useState<ProjectItem[]>([]);
   const apiUrl = import.meta.env.VITE_API_URL;
+  const githubt = import.meta.env.VITE_GITHUB;
   useEffect(() => {
     const fetchUserData = async () => {
       if (!userId) return;
@@ -44,7 +45,13 @@ export const UserProfile = () => {
 
           // Obtener foto de perfil desde la API de GitHub si existe el username
           if (data.username) {
-            const githubResponse = await fetch(`https://api.github.com/users/${data.username}`);
+            const githubResponse = await fetch(`https://api.github.com/users/${data.username}`, {
+              method: 'GET',
+              headers: {
+                'Authorization': `Bearer ${githubt}`, // Aquí pasas el token
+                
+              }
+            });
             const githubData = await githubResponse.json();
 
             if (githubData.avatar_url) {
@@ -73,7 +80,7 @@ export const UserProfile = () => {
 
       try {
         setLoading(true);
-        const response = await fetch("http://localhost:3000/projects");
+        const response = await fetch(`${apiUrl}/projects`);
         if (!response.ok) {
           throw new Error("Error fetching projects.");
         }

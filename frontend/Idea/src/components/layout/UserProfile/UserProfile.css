@@ -91,6 +91,9 @@
     margin-right: 0;
     margin-bottom: 1rem;
   }
+  .githubCalendar{
+    display: none;
+  }
 }
 .githubCalendar{
   margin-top: 30px;

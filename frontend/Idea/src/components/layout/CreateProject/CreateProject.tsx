@@ -19,7 +19,7 @@ export const CreateProject = () => {
   const [userData, setUserData] = useState<any>(null);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const apiUrl = import.meta.env.VITE_API_URL;
-
+  const githubt = import.meta.env.VITE_GITHUB;
   const availableCategories = [
     "Frontend",
     "Backend",
@@ -92,6 +92,9 @@ export const CreateProject = () => {
       const busqueda = userData.username;
       const githubResponse = await fetch(`https://api.github.com/users/${busqueda}/repos`, {
         method: "GET",
+        headers: {
+          Authorization: `Bearer ${githubt}`,
+        },
       });
       const githubData = await githubResponse.json();
       setGithubRepos(githubData);

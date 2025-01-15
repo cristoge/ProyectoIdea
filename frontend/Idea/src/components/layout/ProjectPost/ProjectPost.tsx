@@ -1,21 +1,20 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { useAuth } from "../../../auth/AuthContext"; 
+import { useAuth } from "../../../auth/AuthContext";
 import "./ProjectPost.css";
+const githubt = import.meta.env.VITE_GITHUB;
 
 export const ProjectPost = () => {
   const { id } = useParams<{ id: string }>();
   const [post, setPost] = useState<any>(null);
   const [creatorName, setCreatorName] = useState<string>("");
+  const [creatorAvatar, setCreatorAvatar] = useState<string>(""); // Para la imagen del avatar
   const [loading, setLoading] = useState<boolean>(true);
   const [comments, setComments] = useState<any[]>([]);
   const [newComment, setNewComment] = useState<string>("");
   const apiUrl = import.meta.env.VITE_API_URL;
-  // Acceder al usuario autenticado desde el AuthContext
   const { currentUser } = useAuth();
-
-  // Inicializar useNavigate
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -37,6 +36,15 @@ export const ProjectPost = () => {
         }
         const creatorData = await creatorResponse.json();
         setCreatorName(creatorData.username);
+
+        // Obtener la imagen del perfil desde GitHub
+        const githubResponse = await fetch(
+          `https://api.github.com/users/${creatorData.username}`
+        );
+        if (githubResponse.ok) {
+          const githubData = await githubResponse.json();
+          setCreatorAvatar(githubData.avatar_url);
+        }
       } catch (err) {
         setLoading(false);
         console.error(err);
@@ -45,15 +53,13 @@ export const ProjectPost = () => {
 
     const fetchComments = async (postId: string) => {
       try {
-        const response = await fetch(
-          `${apiUrl}/projects/${postId}/comments`
-        );
+        const response = await fetch(`${apiUrl}/projects/${postId}/comments`);
         if (!response.ok) {
           throw new Error("Error al obtener los comentarios");
         }
         const commentsData = await response.json();
 
-        const commentsWithUsernames = await Promise.all(
+        const commentsWithUsernamesAndAvatars = await Promise.all(
           commentsData.map(async (comment: any) => {
             const userResponse = await fetch(
               `${apiUrl}/users/${comment.userId}`
@@ -62,14 +68,28 @@ export const ProjectPost = () => {
               throw new Error("Error al obtener el nombre de usuario");
             }
             const userData = await userResponse.json();
+
+            // Obtener la imagen de perfil de GitHub para cada comentario
+            const githubResponse = await fetch(
+              `https://api.github.com/users/${userData.username}`,
+              
+              {
+                method: "GET",
+                headers: {
+                  Authorization: `Bearer ${githubt}`,
+                },
+              }
+            );
+            const githubData = await githubResponse.json();
             return {
               ...comment,
               username: userData.username,
+              avatarUrl: githubData.avatar_url, // Imagen del avatar
             };
           })
         );
 
-        setComments(commentsWithUsernames);
+        setComments(commentsWithUsernamesAndAvatars);
       } catch (err) {
         console.error(err);
       }
@@ -101,20 +121,17 @@ export const ProjectPost = () => {
     }
 
     try {
-      const idToken = await currentUser.getIdToken(); // Obtener el token del usuario autenticado
-      const response = await fetch(
-        `${apiUrl}/projects/${id}/comments`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${idToken}`,
-          },
-          body: JSON.stringify({
-            comment: newComment,
-          }),
-        }
-      );
+      const idToken = await currentUser.getIdToken();
+      const response = await fetch(`${apiUrl}/projects/${id}/comments`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${idToken}`,
+        },
+        body: JSON.stringify({
+          comment: newComment,
+        }),
+      });
 
       if (!response.ok) {
         throw new Error("Error al enviar el comentario");
@@ -135,18 +152,15 @@ export const ProjectPost = () => {
     }
 
     try {
-      const idToken = await currentUser.getIdToken(); // Obtener el token del usuario autenticado
-      const response = await fetch(
-        `${apiUrl}/projects/${id}/like`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${idToken}`,
-          },
-          body: JSON.stringify({}),
-        }
-      );
+      const idToken = await currentUser.getIdToken();
+      const response = await fetch(`${apiUrl}/projects/${id}/like`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${idToken}`,
+        },
+        body: JSON.stringify({}),
+      });
 
       if (!response.ok) {
         throw new Error("Error al dar like al proyecto");
@@ -230,7 +244,14 @@ export const ProjectPost = () => {
         <h2>Comentarios</h2>
         {comments.map((comment) => (
           <div key={comment.commentId} className="comment">
-            <p className="comment-user">{comment.username}</p>
+            <div className="comment-header">
+              <img
+                src={comment.avatarUrl}
+                alt={comment.username}
+                className="comment-avatar"
+              />
+              <p className="comment-user">{comment.username}</p>
+            </div>
             <p className="comment-content">{comment.content}</p>
           </div>
         ))}
