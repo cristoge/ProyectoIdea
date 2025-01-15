@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { useAuth } from '../../../auth/AuthContext';
 import { Card } from "../../common";
 import './UserProfile.css';
+import GitHubCalendar from 'react-github-calendar';
 
 interface ProjectItem {
   title: string;
@@ -117,11 +118,13 @@ export const UserProfile = () => {
                   <p className='userDescription'>{userData.description}</p>
                 </div>
               </div>
+                <div className='githubCalendar'>
+                  <GitHubCalendar username={userData.username} style={{ color: 'black' }} />
+                </div>
             </div>
           ) : (
             <p className='noData'>No user data available.</p>
           )}
-  
           <div>
             <h3 className='projectsTitle'>Mis Proyectos</h3>
             {userProjects.length > 0 ? (

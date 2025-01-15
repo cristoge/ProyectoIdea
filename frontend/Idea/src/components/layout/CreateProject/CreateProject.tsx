@@ -3,6 +3,7 @@ import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/
 import { app } from "../../../../firebaseConfig"
 import { useAuth } from '../../../auth/AuthContext'
 import './CreateProject.css'
+import imageCompression from 'browser-image-compression';
 
 export const CreateProject = () => {
   const { currentUser } = useAuth();
@@ -42,8 +43,6 @@ export const CreateProject = () => {
       try {
         setLoading(true);
         const token = await currentUser.getIdToken();
-
-        // Realizamos la solicitud a la API local para obtener los datos del usuario
         const response = await fetch(`${apiUrl}/userData`, {
           method: "GET",
           headers: {
@@ -101,10 +100,27 @@ export const CreateProject = () => {
     }
   };
 
+  const compressImage = async (file: File): Promise<File> => {
+    const options = {
+      maxSizeMB: 1,
+      maxWidthOrHeight: 1920,
+      useWebWorker: true,
+    };
+
+    try {
+      const compressedFile = await imageCompression(file, options);
+      return compressedFile;
+    } catch (error) {
+      console.error("Error compressing image:", error);
+      return file;
+    }
+  }
+
   const uploadImageToStorage = async (file: File): Promise<string> => {
+    const compressedFile = await compressImage(file);
     const storage = getStorage(app);
-    const storageRef = ref(storage, `projects/${file.name}-${Date.now()}`);
-    const uploadTask = uploadBytesResumable(storageRef, file);
+    const storageRef = ref(storage, `projects/${compressedFile.name}-${Date.now()}`);
+    const uploadTask = uploadBytesResumable(storageRef, compressedFile);
 
     return new Promise((resolve, reject) => {
       uploadTask.on(
