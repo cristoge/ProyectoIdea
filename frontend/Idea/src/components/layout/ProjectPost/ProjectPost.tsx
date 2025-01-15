@@ -1,19 +1,26 @@
+import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { useAuth } from "../../../auth/AuthContext";
 import "./ProjectPost.css";
+const githubt = import.meta.env.VITE_GITHUB;
 
 export const ProjectPost = () => {
   const { id } = useParams<{ id: string }>();
   const [post, setPost] = useState<any>(null);
   const [creatorName, setCreatorName] = useState<string>("");
+  const [creatorAvatar, setCreatorAvatar] = useState<string>(""); // Para la imagen del avatar
   const [loading, setLoading] = useState<boolean>(true);
   const [comments, setComments] = useState<any[]>([]);
   const [newComment, setNewComment] = useState<string>("");
+  const apiUrl = import.meta.env.VITE_API_URL;
+  const { currentUser } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchPostData = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/projects/${id}`);
+        const response = await fetch(`${apiUrl}/projects/${id}`);
         if (!response.ok) {
           throw new Error("Error al obtener los datos del post");
         }
@@ -22,13 +29,22 @@ export const ProjectPost = () => {
         setLoading(false);
 
         const creatorResponse = await fetch(
-          `http://localhost:3000/users/${postData.creatorId}`
+          `${apiUrl}/users/${postData.creatorId}`
         );
         if (!creatorResponse.ok) {
           throw new Error("Error al obtener los datos del creador");
         }
         const creatorData = await creatorResponse.json();
         setCreatorName(creatorData.username);
+
+        // Obtener la imagen del perfil desde GitHub
+        const githubResponse = await fetch(
+          `https://api.github.com/users/${creatorData.username}`
+        );
+        if (githubResponse.ok) {
+          const githubData = await githubResponse.json();
+          setCreatorAvatar(githubData.avatar_url);
+        }
       } catch (err) {
         setLoading(false);
         console.error(err);
@@ -37,31 +53,43 @@ export const ProjectPost = () => {
 
     const fetchComments = async (postId: string) => {
       try {
-        const response = await fetch(
-          `http://localhost:3000/projects/${postId}/comments`
-        );
+        const response = await fetch(`${apiUrl}/projects/${postId}/comments`);
         if (!response.ok) {
           throw new Error("Error al obtener los comentarios");
         }
         const commentsData = await response.json();
 
-        const commentsWithUsernames = await Promise.all(
+        const commentsWithUsernamesAndAvatars = await Promise.all(
           commentsData.map(async (comment: any) => {
             const userResponse = await fetch(
-              `http://localhost:3000/users/${comment.userId}`
+              `${apiUrl}/users/${comment.userId}`
             );
             if (!userResponse.ok) {
               throw new Error("Error al obtener el nombre de usuario");
             }
             const userData = await userResponse.json();
+
+            // Obtener la imagen de perfil de GitHub para cada comentario
+            const githubResponse = await fetch(
+              `https://api.github.com/users/${userData.username}`,
+              
+              {
+                method: "GET",
+                headers: {
+                  Authorization: `Bearer ${githubt}`,
+                },
+              }
+            );
+            const githubData = await githubResponse.json();
             return {
               ...comment,
               username: userData.username,
+              avatarUrl: githubData.avatar_url, // Imagen del avatar
             };
           })
         );
 
-        setComments(commentsWithUsernames);
+        setComments(commentsWithUsernamesAndAvatars);
       } catch (err) {
         console.error(err);
       }
@@ -87,20 +115,23 @@ export const ProjectPost = () => {
 
     if (!newComment.trim()) return;
 
+    if (!currentUser) {
+      alert("Por favor inicia sesión para comentar.");
+      return;
+    }
+
     try {
-      const response = await fetch(
-        `http://localhost:3000/projects/${id}/comments`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-          },
-          body: JSON.stringify({
-            comment: newComment,
-          }),
-        }
-      );
+      const idToken = await currentUser.getIdToken();
+      const response = await fetch(`${apiUrl}/projects/${id}/comments`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${idToken}`,
+        },
+        body: JSON.stringify({
+          comment: newComment,
+        }),
+      });
 
       if (!response.ok) {
         throw new Error("Error al enviar el comentario");
@@ -115,18 +146,21 @@ export const ProjectPost = () => {
   };
 
   const handleLike = async () => {
+    if (!currentUser) {
+      alert("Por favor inicia sesión para dar like.");
+      return;
+    }
+
     try {
-      const response = await fetch(
-        `http://localhost:3000/projects/${id}/like`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-          },
-          body: JSON.stringify({}),
-        }
-      );
+      const idToken = await currentUser.getIdToken();
+      const response = await fetch(`${apiUrl}/projects/${id}/like`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${idToken}`,
+        },
+        body: JSON.stringify({}),
+      });
 
       if (!response.ok) {
         throw new Error("Error al dar like al proyecto");
@@ -140,6 +174,10 @@ export const ProjectPost = () => {
     } catch (err) {
       console.error(err);
     }
+  };
+
+  const goToCreatorProfile = () => {
+    navigate(`/profile/${post.creatorId}`);
   };
 
   if (loading) {
@@ -173,16 +211,27 @@ export const ProjectPost = () => {
       <img src={post.imageVideoUrl} alt={post.title} />
       <p>{post.description}</p>
 
-      <div className="tags-info">
-        {post.tags.map((tag: string, index: number) => (
-          <p key={index} className="tag">
-            {tag}
-          </p>
-        ))}
-      </div>
+      {post.tags && post.tags.length > 0 && (
+        <div className="tags-info">
+          {post.tags.map((tag: string, index: number) => (
+            <p key={index} className="tag">
+              {tag}
+            </p>
+          ))}
+        </div>
+      )}
 
       <div className="project-info">
-        <p className="creator-info">Creado por: {creatorName}</p>
+        <p className="creator-info">
+          Creado por:{" "}
+          <span
+            className="creator-link"
+            onClick={goToCreatorProfile}
+            style={{ cursor: "pointer", color: "#0277B6" }}
+          >
+            {creatorName}
+          </span>
+        </p>
         <div className="like-info">
           <span>Likes: {post.likeCounts}</span>
           <button className="like-button" onClick={handleLike}>
@@ -195,7 +244,14 @@ export const ProjectPost = () => {
         <h2>Comentarios</h2>
         {comments.map((comment) => (
           <div key={comment.commentId} className="comment">
-            <p className="comment-user">{comment.username}</p>
+            <div className="comment-header">
+              <img
+                src={comment.avatarUrl}
+                alt={comment.username}
+                className="comment-avatar"
+              />
+              <p className="comment-user">{comment.username}</p>
+            </div>
             <p className="comment-content">{comment.content}</p>
           </div>
         ))}

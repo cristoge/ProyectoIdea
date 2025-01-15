@@ -6,18 +6,17 @@ export const CreateAccount = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [username, setUsername] = useState(''); // Nuevo estado para el nombre de usuario
+  const [username, setUsername] = useState(''); 
   const [error, setError] = useState('');
   const navigate = useNavigate();
-
-  // Función para registrar con email, contraseña y nombre de usuario
+  const apiUrl = import.meta.env.VITE_API_URL;
   const registerWithEmail = async (email: string, password: string, username: string) => {
     if (password !== confirmPassword) {
       setError("Las contraseñas no coinciden.");
       return;
     }
     try {
-      const response = await fetch("http://localhost:3000/users", {
+      const response = await fetch(`${apiUrl}/users`, {
         method: "POST",
         headers: {
           'Content-Type': 'application/json',
@@ -46,9 +45,9 @@ export const CreateAccount = () => {
         e.preventDefault();
         registerWithEmail(email, password, username); // Pasa el nombre de usuario
       }}>
-        <h2>Crear Cuenta</h2>
+        <h2 style={{ textAlign: 'center', color: '#333', marginBottom: '1.5rem' }}>Crear Cuenta</h2>
         <div className="input-group">
-          <label>Nombre de Usuario:</label> {/* Nuevo campo */}
+          <label>Nombre de Usuario: <small>El mismo que en github</small></label> 
           <input 
             type="text" 
             value={username} 

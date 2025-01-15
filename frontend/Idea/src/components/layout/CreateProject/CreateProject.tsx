@@ -1,41 +1,129 @@
-'use client'
-
-import { useState, ChangeEvent } from 'react'
-import { getAuth } from "firebase/auth"
+import { useState, ChangeEvent, useEffect } from 'react'
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage"
 import { app } from "../../../../firebaseConfig"
+import { useAuth } from '../../../auth/AuthContext'
 import './CreateProject.css'
+import imageCompression from 'browser-image-compression';
 
 export const CreateProject = () => {
-  const [loading, setLoading] = useState(false)
-  const [projectTitle, setProjectTitle] = useState("")
-  const [projectDescription, setProjectDescription] = useState("")
-  const [imageFile, setImageFile] = useState<File | null>(null)
-  const [tags, setTags] = useState<string[]>([])
-  const [newTag, setNewTag] = useState("")
-  const [projectLink, setProjectLink] = useState("")  // Nuevo estado para el enlace
+  const { currentUser } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [projectTitle, setProjectTitle] = useState("");
+  const [projectDescription, setProjectDescription] = useState("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [tags, setTags] = useState<string[]>([]);
+  const [newTag, setNewTag] = useState("");
+  const [projectLink, setProjectLink] = useState("");
+  const [githubRepos, setGithubRepos] = useState<any[]>([]);
+  const [selectedRepo, setSelectedRepo] = useState("");
+  const [userData, setUserData] = useState<any>(null);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const apiUrl = import.meta.env.VITE_API_URL;
+  const githubt = import.meta.env.VITE_GITHUB;
+  const availableCategories = [
+    "Frontend",
+    "Backend",
+    "Mobile",
+    "Data Science",
+    "DevOps",
+    "Machine Learning",
+    "Cybersecurity",
+    "Blockchain",
+    "Game Development",
+    "UI/UX",
+    "Artificial Intelligence",
+    "Virtual Reality",
+    "Database",
+  ];
+  
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (!currentUser) return;
+
+      try {
+        setLoading(true);
+        const token = await currentUser.getIdToken();
+        const response = await fetch(`${apiUrl}/userData`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`, 
+            'Content-Type': 'application/json',
+          },
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          setUserData(data);
+        } else {
+          console.error("Error fetching user data:", data.error);
+        }
+      } catch (error) {
+        console.error("Error during fetch:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (currentUser) {
+      fetchUserData();
+    }
+  }, [currentUser]);
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setImageFile(e.target.files[0])
+      setImageFile(e.target.files[0]);
     }
-  }
+  };
 
   const handleAddTag = () => {
     if (newTag && !tags.includes(newTag)) {
-      setTags((prevTags) => [...prevTags, newTag])
-      setNewTag("")
+      setTags((prevTags) => [...prevTags, newTag]);
+      setNewTag("");
+    }
+  };
+
+  const handleRemoveTag = (tagToRemove: string) => {
+    setTags((prevTags) => prevTags.filter((tag) => tag !== tagToRemove));
+  };
+
+  const fetchGitHubRepos = async () => {
+    try {
+      const busqueda = userData.username;
+      const githubResponse = await fetch(`https://api.github.com/users/${busqueda}/repos`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${githubt}`,
+        },
+      });
+      const githubData = await githubResponse.json();
+      setGithubRepos(githubData);
+    } catch (error) {
+      console.error("Error fetching GitHub repos:", error);
+    }
+  };
+
+  const compressImage = async (file: File): Promise<File> => {
+    const options = {
+      maxSizeMB: 1,
+      maxWidthOrHeight: 1920,
+      useWebWorker: true,
+    };
+
+    try {
+      const compressedFile = await imageCompression(file, options);
+      return compressedFile;
+    } catch (error) {
+      console.error("Error compressing image:", error);
+      return file;
     }
   }
 
-  const handleRemoveTag = (tagToRemove: string) => {
-    setTags((prevTags) => prevTags.filter((tag) => tag !== tagToRemove))
-  }
-
   const uploadImageToStorage = async (file: File): Promise<string> => {
-    const storage = getStorage(app)
-    const storageRef = ref(storage, `projects/${file.name}-${Date.now()}`)
-    const uploadTask = uploadBytesResumable(storageRef, file)
+    const compressedFile = await compressImage(file);
+    const storage = getStorage(app);
+    const storageRef = ref(storage, `projects/${compressedFile.name}-${Date.now()}`);
+    const uploadTask = uploadBytesResumable(storageRef, compressedFile);
 
     return new Promise((resolve, reject) => {
       uploadTask.on(
@@ -43,29 +131,34 @@ export const CreateProject = () => {
         null,
         (error) => reject(error),
         async () => {
-          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref)
-          resolve(downloadURL)
+          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+          resolve(downloadURL);
         }
-      )
-    })
-  }
+      );
+    });
+  };
+  const handleCategoryChange = (category: string) => {
+    if (selectedCategories.includes(category)) {
+      setSelectedCategories(selectedCategories.filter(cat => cat !== category));
+    } else {
+      setSelectedCategories([...selectedCategories, category]);
+    }
+  };
 
   const createProject = async () => {
     try {
-      setLoading(true)
-      const auth = getAuth(app)
-      const currentUser = auth.currentUser
+      setLoading(true);
 
       if (!currentUser) {
-        console.error("No user is authenticated.")
-        return
+        console.error("No user is authenticated.");
+        return;
       }
 
-      const token = await currentUser.getIdToken()
-      let imageVideoUrl = ""
+      const token = await currentUser.getIdToken();
+      let imageVideoUrl = "";
 
       if (imageFile) {
-        imageVideoUrl = await uploadImageToStorage(imageFile)
+        imageVideoUrl = await uploadImageToStorage(imageFile);
       }
 
       const projectData = {
@@ -73,32 +166,33 @@ export const CreateProject = () => {
         description: projectDescription,
         imageVideoUrl,
         tags,
-        link: projectLink,  // Incluir el link en los datos del proyecto
-      }
+        link: projectLink,
+        repository: selectedRepo, // Incluir el repositorio seleccionado
+        categories: selectedCategories,
+      };
 
-      const response = await fetch("http://localhost:3000/projects", {
+      const response = await fetch(`${apiUrl}/projects`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify(projectData),
-      })
+      });
 
-      const data = await response.json()
+      const data = await response.json();
 
       if (response.ok) {
-        console.log("Proyecto creado correctamente:", data)
-        
+        console.log("Proyecto creado correctamente:", data);
       } else {
         console.error("Error al crear el proyecto:", data.error);
       }
     } catch (error) {
-      console.error("Error durante la solicitud:", error)
+      console.error("Error durante la solicitud:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="create-project-form">
@@ -144,6 +238,23 @@ export const CreateProject = () => {
         />
       </div>
       <div className="form-group">
+        <label>Categorías del Proyecto</label>
+        <div className="repos-list">
+          {availableCategories.map((category) => (
+            <div key={category}>
+              <input
+                type="checkbox"
+                id={`category-${category}`}
+                value={category}
+                checked={selectedCategories.includes(category)}
+                onChange={() => handleCategoryChange(category)}
+              />
+              <label htmlFor={`category-${category}`}>{category}</label>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="form-group">
         <label htmlFor="projectTags">Etiquetas del Proyecto</label>
         <div className="tag-input">
           <input
@@ -165,6 +276,33 @@ export const CreateProject = () => {
           ))}
         </div>
       </div>
+
+      {/* Checkbox for GitHub repos */}
+      <div className="form-group">
+        <label>Seleccionar Repositorio de GitHub</label>
+        <div className="repos-list">
+          {githubRepos.length > 0 ? (
+            githubRepos.map((repo) => (
+              <div key={repo.id}>
+                <input
+                  type="radio"
+                  id={`repo-${repo.id}`}
+                  value={repo.name}
+                  checked={selectedRepo === repo.name}
+                  onChange={() => setSelectedRepo(repo.name)}
+                />
+                <label htmlFor={`repo-${repo.id}`}>{repo.name}</label>
+              </div>
+            ))
+          ) : (
+            <p>No se encontraron repositorios. Carga los repositorios primero.</p>
+          )}
+        </div>
+        <button type="button" onClick={fetchGitHubRepos} className="fetch-repos-btn">
+          Cargar Repositorios
+        </button>
+      </div>
+
       <button
         onClick={createProject}
         disabled={loading || !projectTitle || !projectDescription || !imageFile}
@@ -173,5 +311,5 @@ export const CreateProject = () => {
         {loading ? "Creando Proyecto..." : "Crear Proyecto"}
       </button>
     </div>
-  )
-}
+  );
+};

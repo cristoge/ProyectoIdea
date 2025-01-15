@@ -98,4 +98,27 @@
   background-color: #cccccc;
   cursor: not-allowed;
 }
+.repos-list {
+  margin-top: 20px;
+}
 
+.repos-list div {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.repos-list input[type="checkbox"] {
+  margin-right: 10px;
+}
+
+.repos-list label {
+  font-size: 14px;
+  color: #4A5568;
+}
+
+.repos-list p {
+  font-size: 14px;
+  color: #666;
+  text-align: center;
+}

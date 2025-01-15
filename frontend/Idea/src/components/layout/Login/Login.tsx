@@ -1,15 +1,31 @@
+import { useState, useEffect } from 'react';
+import { useAuth } from '../../../auth/AuthContext'; 
 import { getAuth, GithubAuthProvider, signInWithPopup, signInWithEmailAndPassword } from "firebase/auth";
 import { app } from "../../../../firebaseConfig";
-import { useState } from "react";
-import './Login.css'; 
 import { useNavigate } from "react-router-dom";
+import './Login.css';
+
 export const Login = () => {
+  const { currentUser } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [screenName, setScreenName] = useState<string | null>(null);  // Estado para guardar el screenName
   const navigate = useNavigate();
+  const apiUrl = import.meta.env.VITE_API_URL;
+  // Redirigir si el usuario ya está autenticado
+  useEffect(() => {
+    if (currentUser) {
+      navigate('/profile'); 
+    }
+  }, [currentUser, navigate]); // Dependencia en currentUser para que solo se ejecute cuando cambie
 
-  // Función de login con email y contraseña
+  useEffect(() => {
+    if (screenName) {
+      console.log('GitHub Screen Name:', screenName);
+    }
+  }, [screenName]);
+
   const loginWithEmail = async (email: string, password: string) => {
     try {
       const auth = getAuth(app);
@@ -17,7 +33,7 @@ export const Login = () => {
       const token = await userCredential.user.getIdToken();
       console.log("ID Token:", token);
       localStorage.setItem("authToken", token);
-      const response = await fetch("http://localhost:3000/login", {
+      const response = await fetch(`${apiUrl}/login`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -44,39 +60,65 @@ export const Login = () => {
   const loginWithGitHub = () => {
     const auth = getAuth(app);
     const provider = new GithubAuthProvider();
-
+  
     signInWithPopup(auth, provider)
       .then(async (response) => {
         const user = response.user;
         console.log(user);
-
+  
         const idToken = await user.getIdToken();
         const credential = GithubAuthProvider.credentialFromResult(response);
         const githubToken = credential ? credential.accessToken : null;
+        
+        if (githubToken) {
+          try {
+            const githubUserResponse = await fetch('https://api.github.com/user', {
+              headers: {
+                Authorization: `Bearer ${githubToken}`,
+              },
+            });
+  
+            if (githubUserResponse.ok) {
+              const githubUserData = await githubUserResponse.json();
+              const screenName = githubUserData.login;  // Guardar el screenName
+              console.log('GitHub Screen Name:', screenName);
+              
+              // Enviar los datos al backend aquí, cuando ya tienes screenName
+              try {
+                const backendResponse = await fetch(`${apiUrl}/users/github`, {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({
+                    idToken,
+                    githubToken,
+                    screenName,  // Ahora screenName está correctamente asignado
+                  }),
+                });
+                
+                const data = await backendResponse.json();
+                if (backendResponse.ok) {
+                  console.log("Usuario Autenticado con GitHub", data);
+                } else {
+                  console.error("Error al autenticar con GitHub:", data);
+                }
+              } catch (error) {
+                console.error("Error al enviar los datos al backend:", error);
+              }
+  
+            } else {
+              console.error('Error al obtener los datos de GitHub');
+            }
+          } catch (error) {
+            console.error('Error al realizar la solicitud a GitHub API:', error);
+          }
+        }
+  
         localStorage.setItem("authToken", idToken);
         console.log("GithubToken:", githubToken);
         console.log("ID Token:", idToken);
-
-        try {
-          const backendResponse = await fetch('http://localhost:3000/users/github', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              idToken,
-              githubToken,
-            }),
-          });
-          const data = await backendResponse.json();
-          if (backendResponse.ok) {
-            console.log("Usuario Autenticado con GitHub", data);
-          } else {
-            console.error("Error al autenticar con GitHub:", data);
-          }
-        } catch (error) {
-          console.error("Error al enviar los datos al backend:", error);
-        }
+  
       })
       .catch((error) => {
         console.error("Error en el inicio de sesión con GitHub:", error);
@@ -91,7 +133,6 @@ export const Login = () => {
       }}>
         <h2>Iniciar sesión</h2>
         <p style={{ color: 'black' }}>No tienes cuenta? <span className="register-link" onClick={() => navigate("/create-account")}>Créala aquí</span></p> 
-      {}
         <div className="input-group">
           <label>Email:</label>
           <input 
@@ -113,14 +154,13 @@ export const Login = () => {
           />
         </div>
         <button type="submit" className="login-button">Iniciar sesión</button>
-      <button onClick={loginWithGitHub} className="login-button">
-        Iniciar sesión con GitHub
-      </button>
+        <button type="button" onClick={loginWithGitHub} className="login-button">
+          Iniciar sesión con GitHub
+        </button>
       </form>
 
       {error && <p className="error-message">{error}</p>}
-
-
+      {screenName && <p className="screen-name">GitHub Screen Name: {screenName}</p>} {/* Mostrar el screenName */}
     </div>
   );
 };
