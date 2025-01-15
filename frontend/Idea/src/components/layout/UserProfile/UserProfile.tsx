@@ -21,7 +21,7 @@ export const UserProfile = () => {
   const [loading, setLoading] = useState(false); 
   const [userData, setUserData] = useState<any>(null); 
   const [userProjects, setUserProjects] = useState<ProjectItem[]>([]);
-
+  const apiUrl = import.meta.env.VITE_API_URL;
   useEffect(() => {
     const fetchUserData = async () => {
       if (!userId) return;
@@ -29,7 +29,7 @@ export const UserProfile = () => {
       try {
         setLoading(true);
 
-        const response = await fetch(`http://localhost:3000/users/${userId}`, {
+        const response = await fetch(`${apiUrl}/users/${userId}`, {
           method: "GET",
           headers: {
             'Content-Type': 'application/json',

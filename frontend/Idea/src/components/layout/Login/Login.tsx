@@ -12,7 +12,7 @@ export const Login = () => {
   const [error, setError] = useState('');
   const [screenName, setScreenName] = useState<string | null>(null);  // Estado para guardar el screenName
   const navigate = useNavigate();
-
+  const apiUrl = import.meta.env.VITE_API_URL;
   // Redirigir si el usuario ya está autenticado
   useEffect(() => {
     if (currentUser) {
@@ -33,7 +33,7 @@ export const Login = () => {
       const token = await userCredential.user.getIdToken();
       console.log("ID Token:", token);
       localStorage.setItem("authToken", token);
-      const response = await fetch("http://localhost:3000/login", {
+      const response = await fetch(`${apiUrl}/login`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -85,7 +85,7 @@ export const Login = () => {
               
               // Enviar los datos al backend aquí, cuando ya tienes screenName
               try {
-                const backendResponse = await fetch('http://localhost:3000/users/github', {
+                const backendResponse = await fetch(`${apiUrl}/users/github`, {
                   method: 'POST',
                   headers: {
                     'Content-Type': 'application/json',

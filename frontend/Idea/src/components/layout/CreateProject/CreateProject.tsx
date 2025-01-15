@@ -17,7 +17,7 @@ export const CreateProject = () => {
   const [selectedRepo, setSelectedRepo] = useState("");
   const [userData, setUserData] = useState<any>(null);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-
+  const apiUrl = import.meta.env.VITE_API_URL;
 
   const availableCategories = [
     "Frontend",
@@ -44,7 +44,7 @@ export const CreateProject = () => {
         const token = await currentUser.getIdToken();
 
         // Realizamos la solicitud a la API local para obtener los datos del usuario
-        const response = await fetch("http://localhost:3000/userData", {
+        const response = await fetch(`${apiUrl}/userData`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`, 
@@ -152,7 +152,7 @@ export const CreateProject = () => {
         categories: selectedCategories,
       };
 
-      const response = await fetch("http://localhost:3000/projects", {
+      const response = await fetch(`${apiUrl}/projects`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,

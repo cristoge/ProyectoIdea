@@ -34,11 +34,12 @@ export const HomePage = () => {
   const [data, setData] = useState<DataItem[]>([]); 
   const [searchTerm, setSearchTerm] = useState<string>(""); 
   const [selectedCategory, setSelectedCategory] = useState<string>(""); // Estado para la categoría seleccionada
+  const apiUrl = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://localhost:3000/projects");
+        const response = await fetch(`${apiUrl}/projects`);
         if (!response.ok) {
           throw new Error("Error en la respuesta de la API");
         }
@@ -48,7 +49,7 @@ export const HomePage = () => {
           result.map(async (item) => {
             try {
               const creatorResponse = await fetch(
-                `http://localhost:3000/users/${item.creatorId}`
+                `${apiUrl}/users/${item.creatorId}`
               );
               if (!creatorResponse.ok) {
                 throw new Error("Error al obtener el nombre del creador");

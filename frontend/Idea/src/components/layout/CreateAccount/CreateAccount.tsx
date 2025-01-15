@@ -9,14 +9,14 @@ export const CreateAccount = () => {
   const [username, setUsername] = useState(''); 
   const [error, setError] = useState('');
   const navigate = useNavigate();
-
+  const apiUrl = import.meta.env.VITE_API_URL;
   const registerWithEmail = async (email: string, password: string, username: string) => {
     if (password !== confirmPassword) {
       setError("Las contraseñas no coinciden.");
       return;
     }
     try {
-      const response = await fetch("http://localhost:3000/users", {
+      const response = await fetch(`${apiUrl}/users`, {
         method: "POST",
         headers: {
           'Content-Type': 'application/json',

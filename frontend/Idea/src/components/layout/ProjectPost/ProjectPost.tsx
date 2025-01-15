@@ -11,7 +11,7 @@ export const ProjectPost = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [comments, setComments] = useState<any[]>([]);
   const [newComment, setNewComment] = useState<string>("");
-
+  const apiUrl = import.meta.env.VITE_API_URL;
   // Acceder al usuario autenticado desde el AuthContext
   const { currentUser } = useAuth();
 
@@ -21,7 +21,7 @@ export const ProjectPost = () => {
   useEffect(() => {
     const fetchPostData = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/projects/${id}`);
+        const response = await fetch(`${apiUrl}/projects/${id}`);
         if (!response.ok) {
           throw new Error("Error al obtener los datos del post");
         }
@@ -30,7 +30,7 @@ export const ProjectPost = () => {
         setLoading(false);
 
         const creatorResponse = await fetch(
-          `http://localhost:3000/users/${postData.creatorId}`
+          `${apiUrl}/users/${postData.creatorId}`
         );
         if (!creatorResponse.ok) {
           throw new Error("Error al obtener los datos del creador");
@@ -46,7 +46,7 @@ export const ProjectPost = () => {
     const fetchComments = async (postId: string) => {
       try {
         const response = await fetch(
-          `http://localhost:3000/projects/${postId}/comments`
+          `${apiUrl}/projects/${postId}/comments`
         );
         if (!response.ok) {
           throw new Error("Error al obtener los comentarios");
@@ -56,7 +56,7 @@ export const ProjectPost = () => {
         const commentsWithUsernames = await Promise.all(
           commentsData.map(async (comment: any) => {
             const userResponse = await fetch(
-              `http://localhost:3000/users/${comment.userId}`
+              `${apiUrl}/users/${comment.userId}`
             );
             if (!userResponse.ok) {
               throw new Error("Error al obtener el nombre de usuario");
@@ -103,7 +103,7 @@ export const ProjectPost = () => {
     try {
       const idToken = await currentUser.getIdToken(); // Obtener el token del usuario autenticado
       const response = await fetch(
-        `http://localhost:3000/projects/${id}/comments`,
+        `${apiUrl}/projects/${id}/comments`,
         {
           method: "POST",
           headers: {
@@ -137,7 +137,7 @@ export const ProjectPost = () => {
     try {
       const idToken = await currentUser.getIdToken(); // Obtener el token del usuario autenticado
       const response = await fetch(
-        `http://localhost:3000/projects/${id}/like`,
+        `${apiUrl}/projects/${id}/like`,
         {
           method: "PATCH",
           headers: {
