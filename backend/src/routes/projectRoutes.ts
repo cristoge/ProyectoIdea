@@ -18,7 +18,7 @@ export const projectRoutes = async (app: FastifyInstance) => {
     { preHandler: [authMiddleware] },
     projectController.createProject
   );
-  app.put<{ Params: { projectId: string }; Body: Partial<Project> }>(
+  app.patch<{ Params: { projectId: string }; Body: Partial<Project> }>(
     "/projects/:projectId",
     { preHandler: [authMiddleware] },
     projectController.updateProject
