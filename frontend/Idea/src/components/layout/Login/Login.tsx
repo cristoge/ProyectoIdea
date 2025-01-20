@@ -16,7 +16,7 @@ export const Login = () => {
   // Redirigir si el usuario ya está autenticado
   useEffect(() => {
     if (currentUser) {
-      navigate('/profile'); 
+      navigate('/'); 
     }
   }, [currentUser, navigate]); // Dependencia en currentUser para que solo se ejecute cuando cambie
 

@@ -28,7 +28,7 @@ export const CreateAccount = () => {
 
       if (response.ok) {
         console.log("Registro exitoso:", data);
-        navigate("/login");
+        navigate("/");
       } else {
         console.error("Error en el registro:", data);
         setError(data.error || "Error en el registro");
