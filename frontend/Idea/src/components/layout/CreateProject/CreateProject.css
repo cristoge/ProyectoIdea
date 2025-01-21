@@ -1,124 +1,198 @@
 .create-project-form {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .create-project-form h2 {
-  margin-bottom: 20px;
+  color: #1a1a1a;
+  font-size: 1.8rem;
+  margin-bottom: 2rem;
   text-align: center;
 }
 
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 1.5rem;
 }
 
 .form-group label {
   display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
-  color: #4A5568;
+  margin-bottom: 0.5rem;
+  color: #4a5568;
+  font-weight: 500;
 }
 
 .form-group input[type="text"],
+.form-group input[type="url"],
 .form-group textarea {
   width: 100%;
-  padding: 8px 0px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  padding: 0.75rem 0px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.2s ease;
+}
+
+.form-group input[type="text"]:focus,
+.form-group input[type="url"]:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #4299e1;
+  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
 }
 
 .form-group textarea {
   resize: vertical;
+  min-height: 100px;
+}
+
+.form-group input[type="file"] {
+  width: 100%;
+  padding: 0.5rem 0px;
+  border: 2px dashed #e2e8f0;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.file-name {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: #4a5568;
+}
+
+.repos-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.repos-list div {
+  display: flex;
+  align-items: flex-start; 
+  gap: 0.5rem;
+}
+
+.repos-list input[type="checkbox"],
+.repos-list input[type="radio"] {
+  width: 1rem;
+  height: 1rem;
 }
 
 .tag-input {
   display: flex;
-  gap: 10px;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
 }
 
 .tag-input input {
-  flex-grow: 1;
+  flex: 1;
 }
 
 .add-tag-btn {
-  padding: 8px 16px;
-  background-color: #4A5568;
+  padding: 0.75rem 1.5rem;
+  background-color: #4299e1;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.add-tag-btn:hover {
+  background-color: #3182ce;
 }
 
 .tags-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 10px;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
 }
 
 .tag {
-  background-color: #e0e0e0;
-  padding: 5px 10px;
-  border-radius: 20px;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 0.5rem;
+  padding: 0.25rem 0.75rem;
+  background-color: #edf2f7;
+  color: #1a1a1a;
+  border-radius: 9999px;
+  font-size: 0.875rem;
 }
 
 .remove-tag-btn {
   background: none;
   border: none;
-  color: #ff4444;
+  color: #718096;
   cursor: pointer;
-  font-weight: bold;
+  padding: 0;
+  font-size: 0.75rem;
+  transition: color 0.2s ease;
 }
 
-.file-name {
-  margin-top: 5px;
-  font-size: 0.9em;
-  color: #666;
+.remove-tag-btn:hover {
+  color: #e53e3e;
+}
+
+.fetch-repos-btn {
+  width: 100%;
+  padding: 0.75rem;
+  margin-top: 1rem;
+  background-color: #48bb78;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.fetch-repos-btn:hover {
+  background-color: #38a169;
 }
 
 .create-project-btn {
   width: 100%;
-  padding: 10px;
-  background-color: #4A5568;
+  padding: 1rem;
+  margin-top: 2rem;
+  background-color: #4299e1;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
+  font-size: 1.1rem;
+  font-weight: 500;
   cursor: pointer;
-  font-size: 16px;
+  transition: background-color 0.2s ease;
+}
+
+.create-project-btn:hover:not(:disabled) {
+  background-color: #3182ce;
 }
 
 .create-project-btn:disabled {
-  background-color: #cccccc;
+  background-color: #cbd5e0;
   cursor: not-allowed;
 }
-.repos-list {
-  margin-top: 20px;
-}
 
-.repos-list div {
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-}
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .create-project-form {
+    margin: 1rem;
+    padding: 1.5rem;
+  }
 
-.repos-list input[type="checkbox"] {
-  margin-right: 10px;
-}
+  .repos-list {
+    grid-template-columns: 1fr;
+  }
 
-.repos-list label {
-  font-size: 14px;
-  color: #4A5568;
-}
+  .tag-input {
+    flex-direction: column;
+  }
 
-.repos-list p {
-  font-size: 14px;
-  color: #666;
-  text-align: center;
+  .add-tag-btn {
+    width: 100%;
+  }
 }

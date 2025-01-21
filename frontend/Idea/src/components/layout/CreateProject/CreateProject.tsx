@@ -308,7 +308,7 @@ export const CreateProject = () => {
 
       <button
         onClick={createProject}
-        disabled={loading || !projectTitle || !projectDescription || !imageFile}
+        disabled={loading || !projectTitle || !projectDescription || !imageFile || tags.length === 0 || selectedCategories.length === 0 || !selectedRepo}
         className="create-project-btn"
       >
         {loading ? "Creando Proyecto..." : "Crear Proyecto"}
