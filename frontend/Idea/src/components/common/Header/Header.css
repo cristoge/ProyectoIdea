@@ -100,6 +100,13 @@ nav {
     flex-grow: 1;
     margin-right: 1rem;
   }
+  .right-section{
+    justify-content: left;
+  }
+  .avatar{
+    width: 2rem; 
+    height: 2rem; 
+  }
 }
 .logout-btn {
   display: none;
