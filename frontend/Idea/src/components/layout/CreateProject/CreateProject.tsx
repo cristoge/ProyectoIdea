@@ -1,4 +1,5 @@
 import { useState, ChangeEvent, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom';
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage"
 import { app } from "../../../../firebaseConfig"
 import { useAuth } from '../../../auth/AuthContext'
@@ -20,6 +21,7 @@ export const CreateProject = () => {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const apiUrl = import.meta.env.VITE_API_URL;
   const githubt = import.meta.env.VITE_GITHUB;
+  const navigate = useNavigate();
   const availableCategories = [
     "Frontend",
     "Backend",
@@ -184,6 +186,7 @@ export const CreateProject = () => {
 
       if (response.ok) {
         console.log("Proyecto creado correctamente:", data);
+        navigate('/');
       } else {
         console.error("Error al crear el proyecto:", data.error);
       }

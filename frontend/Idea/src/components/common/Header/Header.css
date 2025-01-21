@@ -47,7 +47,9 @@ nav {
   display: flex;
   align-items: center;
 }
-
+ul.menu li a.logout-link:hover {
+  color: red; /* Aumenta la especificidad */
+}
 .search-bar {
   padding: 0.5rem;
   border: 1px solid #e2e8f0;
@@ -108,21 +110,7 @@ nav {
     height: 2rem; 
   }
 }
-.logout-btn {
-  display: none;
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #f44336;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  cursor: pointer;
-  border-radius: 5px;
-  margin-top: 5px;
-  z-index: 10;
-}
+
 
 .avatar:hover .logout-btn {
   display: block;
