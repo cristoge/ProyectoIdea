@@ -30,16 +30,21 @@
 }
 
 .project-post h1 {
+  color: black;
   font-size: 2.5rem;
-  color: #333;
   margin-bottom: 1rem;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 700;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .project-post p {
-  font-size: 1rem;
-  color: #555;
-  line-height: 1.6;
-  margin-bottom: 1rem;
+  font-size: 1rem; 
+  color: #333; 
+  line-height: 1.8; 
+  margin-bottom: 1.5rem; 
+  text-align: justify; 
+  text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.1);
 }
 
 .project-post img {

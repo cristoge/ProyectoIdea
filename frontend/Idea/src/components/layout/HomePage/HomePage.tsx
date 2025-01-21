@@ -86,6 +86,11 @@ export const HomePage = () => {
 
   return (
     <>
+    <div className="ideaDev">
+      <h1>¡Bienvenido a IdeaDev!</h1>
+      <p>La plataforma donde puedes compartir tus proyectos y colaborar con otros desarrolladores.</p>
+      <img src="/Ejemplo.webp" alt="Imagen de Portada" />
+    </div>
       <div className="header-container">
         <h1 className="page-title">Proyectos</h1>
 
