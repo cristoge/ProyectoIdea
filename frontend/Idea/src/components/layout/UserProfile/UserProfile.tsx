@@ -13,7 +13,8 @@ interface ProjectItem {
   creatorId: string;
   likedCount: number;
   projectId: string;
-  creatorName?: string; 
+  creatorName?: string;
+  urlGithub?: string;
 }
 
 export const UserProfile = () => {
@@ -58,6 +59,7 @@ export const UserProfile = () => {
               setUserData((prevData: any) => ({
                 ...prevData,
                 profilePicture: githubData.avatar_url,
+                urlGithub: githubData.html_url,
               }));
             }
           }
@@ -121,7 +123,11 @@ export const UserProfile = () => {
                   </div>
                 )}
                 <div>
-                  <h3 className='username'>{userData.username}</h3>
+                    <h3 className='username'>
+                    <a href={userData.urlGithub} target="_blank" rel="noopener noreferrer" style={{ color: 'black' }}>
+                      {userData.username}
+                    </a>
+                    </h3>
                   <p className='userDescription'>{userData.description}</p>
                 </div>
               </div>

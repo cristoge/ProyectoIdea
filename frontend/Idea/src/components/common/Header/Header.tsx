@@ -28,10 +28,11 @@ export const Header = () => {
               <Link to="/Login">Iniciar sesión</Link>
             </li>
           )}
-
-          <li>
-            <Link to="/create-project">Crear proyecto</Link>
-          </li>
+          {currentUser && (
+            <li>
+              <Link to="/create-project">Crear proyecto</Link>
+            </li>
+          )}
         </ul>
         <div className="right-section">
           {currentUser && (
