@@ -262,18 +262,19 @@ export const ProjectPost = () => {
         )}
 
       {isEditing ? (
-        <form onSubmit={handleEditSubmit}>
+        <form className="edit-form" onSubmit={handleEditSubmit}>
           <input
+            className="edit-title"
             type="text"
             value={editPostData.title}
             onChange={(e) => setEditPostData({ ...editPostData, title: e.target.value })}
           />
           <textarea
+            className="edit-description"
             value={editPostData.description}
             onChange={(e) => setEditPostData({ ...editPostData, description: e.target.value })}
           />
-
-          <button type="submit">Guardar cambios</button>
+          <button className="save-button" type="submit">Guardar cambios</button>
         </form>
       ) : (
         <>
