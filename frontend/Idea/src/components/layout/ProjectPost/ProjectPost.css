@@ -37,7 +37,17 @@
   font-weight: 700;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 }
+.editar-post{
+  padding: 0.75rem 1.5rem;
+  background-color: #4299e1;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  margin-bottom: 20px;
 
+}
 .project-post p {
   font-size: 1rem; 
   color: #333; 
@@ -139,7 +149,7 @@
 }
 
 .comment-form button {
-  background-color: #0077b6;
+  background-color: #4299e1;
   color: white;
   border: none;
   padding: 0.75rem 1.5rem;

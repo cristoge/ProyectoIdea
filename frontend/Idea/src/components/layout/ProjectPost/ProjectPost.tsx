@@ -258,7 +258,7 @@ export const ProjectPost = () => {
 
       </div>
         {currentUser?.uid === post.creatorId && !isEditing && (
-          <button onClick={handleEditClick}>Editar</button>
+          <button className="editar-post" onClick={handleEditClick}>Editar</button>
         )}
 
       {isEditing ? (
